@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Lalezar&display=swap');
+
+/*Reseta a margem em volta de tudo*/
+body,
+header {
+    margin: 0px;
+    padding: 0px;
+}
+
+button, a {
+    cursor: pointer;
+}
+
+header {
+    display: flex;
+    position: sticky;
+    justify-content: space-between;
+    /* Para espaçar os elementos */
+    align-items: center;
+    /* Para alinhar os elementos verticalmente */
+    padding-inline: 30px;
+    /* Espaçamento interno */
+    font-family: "Lalezar";
+    font-weight: normal;
+}
+
+/*Logo no cabeçalho do site*/
+#logo {
+    color: #4050FC;
+    font-weight: normal;
+    font-size: 40px;
+
+}
+
+/*Hiperlinks no cabeçalho (Sobre o TrackIt e Sobre Nós) */
+.options a {
+    margin-right: 20px;
+    color: #4050FC;
+    font-size: 20px;
+}
+
+/*Botão de login no cabeçalho*/
+.options button {
+    width: 130px;
+    height: 45px;
+    border-radius: 50px;
+    background-color: #FFFFFF;
+    border-color: #4050FC;
+    border-width: 2px;
+    color: #4050FC;
+    font-size: 19px;
+    font-family: "Lalezar";
+}
+
+/*Textos no meio da página*/
+body h1 {
+    position: absolute;
+
+    color: #9676F1;
+    font-family: "Lalezar";
+    text-wrap: wrap;
+    font-size: 40px;
+    font-weight: normal;
+
+    top: 180px;
+    width: 700px;
+    margin: 30px;
+}
+
+/*Textos no meio da página*/
+#info {
+    position: absolute;
+
+    color: #9676F1;
+    font-family: "Lalezar";
+    font-weight: normal;
+    font-size: 30px;
+
+    top: 320px;
+    margin: 30px;
+}
+
+/*Botão Começar Agora embaixo dos textos*/
+#register {
+    position: absolute;
+    bottom: 20%;
+    margin: 30px;
+    width: 150px;
+    height: 50px;
+    border-radius: 50px;
+
+    color: #FFFFFF;
+    background-color: #4050FC;
+    border-color: #4050FC;
+
+    font-family: "Lalezar";
+    font-weight: normal;
+    font-size: 18px;
+    border: none;
+}
+
+/*Imagem no meio do site*/
+#landing_image {
+    position: absolute;
+    right: 0px;
+    top: 140px;
+    width: 500px;
+}
+
+/*PopUps Sobre nós e Sobre o TrackIt*/
+.popup {
+    display: none;
+    /* O pop-up fica invisível por padrão */
+    position: fixed;
+    z-index: 999;
+    /* Mantém o pop-up na frente de todos os outros elementos */
+    backdrop-filter: blur(5px);
+    /* Efeito de desfoque no fundo */
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fundo preto semi-transparente */
+
+    justify-content: center;
+    align-items: center;
+
+}
+
+/*Quando o PopUp é mostrado*/
+.popup.show {
+    display: flex;
+    opacity: 1;
+}
+
+/*Conteúdo dentro dos PopUp*/
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    width: 80%;
+    font-family: "Lalezar";
+    color: #7984ff;
+    max-width: 500px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(0);
+    animation: popin 0.1s forwards;
+
+    border-image: linear-gradient(right, #4050FC, #9676F1);
+    border-style: solid;
+}
+
+/*Conteúdo do popup de login*/
+#popup_login .popup-content {
+    display: flex;
+    flex-direction: column;
+    right: 0px;
+    max-width: 300px;
+    text-align: center;
+    border-width: 5px;
+}
+
+/*inputs no popup de login*/
+#popup_login input {
+    width: 200px;
+    height: 40px;
+    border-radius: 15px;
+    border-color: #9676F1;
+    border-style: solid;
+    border-width: 3px;
+}
+
+/*Declaração da margem, exceto no último elemento*/
+#popup_login input:not(:last-of-type) {
+    margin-bottom: 20px;
+}
+
+/*Placeholder dentro dos inputs no popup de login*/
+#popup_login input, input::placeholder {
+    text-align: center;
+    font-family: "Lalezar";
+    color: #7984ff;
+    font-size: 16px;
+}
+
+/*Animação de exibir os Popups*/
+@keyframes popin {
+    to {
+        transform: scale(1);
+    }
+}
+
+/*Título de todos os Popups*/
+.popup-content h1 {
+    position: relative;
+    top: 0px;
+    justify-content: center;
+    margin: 5px;
+}
+
+/*ícone de x nos cantos para fechar os popups*/
+.close:not(#close_register_button) {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/*Condiguração do formulário, para os elementos*/
+#popup_login .popup-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/*Configuração dos botões do popup de login*/
+#popup_login .popup-content button {
+    
+    width: 150px;
+    height: 40px;
+    margin: 10px;
+
+    border-radius: 50px;
+    border-color: #7984ff;
+    border-style: solid;
+
+    background-color: #FFFFFF;
+    font-family: "Lalezar";
+    font-size: 16px;
+    color: #7984ff;
+
+    text-align: center;
+    justify-content: center;
+
+}
+
+#popup-login .popup-content button:not(:last-of-type) {
+    background-color: #4050FC;
+    color: #FFFFFF;
+    font-family: "Lalezar";
+    border-color: #4050FC;
+    text-align: center;
+}
+
+
+#popup_register .popup-content, form {
+    max-width: 300px;  /* Limita a largura do popup */
+    display: flex;
+    flex-direction: column;  /* Alinha os elementos verticalmente */
+    align-items: center;  /* Centraliza horizontalmente */
+    margin-bottom: 10px;
+}
+
+#popup_register input {
+    padding: 5px;
+    border-radius: 10px;
+    border: 3px;
+    border-color: #9676F1;
+    border-style: solid;
+    text-align: center;
+    font-size: 16px;
+    font-family: 'Lalezar';
+    color: #0a0b16;
+    margin-bottom: 10px;
+}
+
+#popup_register button {
+    padding: 5px;
+    border-radius: 20px;
+    border-color: #4050FC;
+    border-style: solid;
+    background-color: #4050FC;
+    color: white;
+    font-family: 'Lalezar';
+    font-size: smaller;
+    width: 150px;
+}
+
+/* Botão "Deixa pra lá" com estilo diferenciado */
+#popup_register #close_register_button {
+    background-color: #FFFFFF;
+    color: #4050FC;
+    border-color: #4050FC;
+
+}
+
+/* Link de Login */
+#popup_register a {
+    color: #4050FC;
+    text-decoration: none;
+    font-family: 'Lalezar';
+    font-size: 16px;
+    margin-top: 10px;
+}

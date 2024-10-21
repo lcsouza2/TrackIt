@@ -35,14 +35,19 @@ registerForm.addEventListener("submit", function(event) {
     })
     .then(response => {
         if (!response.ok) {
+            
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
-        if (data.Status === "User Already Exists")
-        alert('O Email já está sendo usado!');
-        throw new Error("Usuário já existe")
+        if (data.Status === "User Already Exists") {
+            alert('O Email já está sendo usado!');
+            throw new Error("Usuário já existe")
+        } else {
+            alert("Registrado com sucesso, vamo te redirecionar")
+            open("../manager.html")
+        }
     })
     .catch((error) => {
         console.error('Error:', error);

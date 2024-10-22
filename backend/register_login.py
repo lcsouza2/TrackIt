@@ -1,8 +1,7 @@
 """Módulo com funcionalidades de registro de dados e login de usuário"""
 import datetime
 import sqlite3
-from http import HTTPStatus
-
+from pydantic import EmailStr
 import bcrypt
 import fastapi
 import jwt
@@ -14,12 +13,13 @@ JWT_SESSION_TOKEN = "IEyP'yQ/rQ"
 
 JWT_REFRESH_TOKEN = "YR:Lu%,QHL"
 
-def create_session_token(user_id):
+def create_session_token(user_id:EmailStr):
     """Cria um token de sessão"""
 
     session_payload={
         "sub": user_id, #ID do usuário que foi autorizado
         "iat": datetime.datetime.now(datetime.timezone.utc), #Data e hora da criação do token
+
         #Data e hora de validade do token
         "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
     }
@@ -27,8 +27,7 @@ def create_session_token(user_id):
     return jwt.encode(session_payload, JWT_SESSION_TOKEN) #Retorna o token criado
 
 
-
-def create_refresh_token(user_id):
+def create_refresh_token(user_id:EmailStr):
     """Cria um token de refresh"""
 
     session_payload={
@@ -64,13 +63,13 @@ def register_user(user:schemas.User):
         connection.commit()
 
         #Retorna o status da requisição e o token caso cadastre devidamente
-        return {"Status" : HTTPStatus.CREATED,
+        return {"Status" : "Success",
                 "Session_JWT" : create_session_token(user.email)}
 
     except sqlite3.IntegrityError: #Erro de chave primária ou Unique
 
         #Retorna o Status do erro e uma mensagem descrevendo
-        return {"Status" : HTTPStatus.INTERNAL_SERVER_ERROR,
+        return {"Status" : "Error",
                 "Message" : "Email já registrado!"}
 
     finally:
@@ -83,9 +82,29 @@ def login(user:schemas.User, response:fastapi.Response):
     Cria um cookie que só pode ser acessado por HTTP no navegador, 
     esse cookie armazena o valor do token de refresh
     """
-    response.set_cookie(
-        key="refresh_token",
-        value=create_refresh_token(user.email),
-        httponly=True,
-    )
+
+    conn = sqlite3.connect(DB_ROUTE)
+    cur = conn.cursor()
+
+
+    cur.execute("SELECT senha_hash FROM usuario WHERE email = ?", (user.email,))
+    result = cur.fetchone()
+
+    if not result:
+        return {"Status" : "Error",
+                "Message" : "Email Não encontrado"}
     
+
+    # if bcrypt.checkpw(user.password, result):
+
+    #         if user.stay_loged:
+    #         response.set_cookie(
+    #             key="refresh_token",
+    #             value=create_refresh_token(user.email),
+    #             httponly=True,
+    #         ) 
+
+    #     return {"Status" : "Success"}
+
+    
+

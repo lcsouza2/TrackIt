@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Lalezar&display=swap');
 
+/*Animação de exibir os Popups*/
+@keyframes popin {
+    to {
+        transform: scale(1);
+    }
+}
+
 /*Reseta a margem em volta de tudo*/
 body,
 header {
@@ -153,6 +160,23 @@ body h1 {
     border-style: solid;
 }
 
+/*Título de todos os Popups*/
+.popup-content h1 {
+    position: relative;
+    top: 0px;
+    justify-content: center;
+    margin: 5px;
+}
+
+/*ícone de x nos cantos para fechar os popups*/
+.close:not(#close_register_button) {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
 /*Conteúdo do popup de login*/
 #popup_login .popup-content {
     display: flex;
@@ -162,6 +186,7 @@ body h1 {
     text-align: center;
     border-width: 5px;
 }
+ 
 
 /*inputs no popup de login*/
 #popup_login input {
@@ -178,36 +203,13 @@ body h1 {
     margin-bottom: 20px;
 }
 
+
 /*Placeholder dentro dos inputs no popup de login*/
 #popup_login input, input::placeholder {
     text-align: center;
     font-family: "Lalezar";
     color: #7984ff;
     font-size: 16px;
-}
-
-/*Animação de exibir os Popups*/
-@keyframes popin {
-    to {
-        transform: scale(1);
-    }
-}
-
-/*Título de todos os Popups*/
-.popup-content h1 {
-    position: relative;
-    top: 0px;
-    justify-content: center;
-    margin: 5px;
-}
-
-/*ícone de x nos cantos para fechar os popups*/
-.close:not(#close_register_button) {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 20px;
-    cursor: pointer;
 }
 
 /*Condiguração do formulário, para os elementos*/
@@ -246,6 +248,11 @@ body h1 {
     text-align: center;
 }
 
+#manter_login{
+    display: inline;
+    align-items: center;
+    
+}
 
 #popup_register .popup-content, form {
     max-width: 300px;  /* Limita a largura do popup */

@@ -2,7 +2,12 @@ let loginForm = document.getElementById("login_form");
 let loginUsername = document.getElementById("login_username");
 let loginPwd = document.getElementById("login_pwd");
 
- 
+loginForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    fetch("")
+}) 
+
 //=====================================================================
 let registerForm = document.getElementById("form_register");
 let registerUsername = document.getElementById("register_username");
@@ -19,8 +24,7 @@ registerForm.addEventListener("submit", function(event) {
         return null;
     } else {
         document.getElementById("no_match_pwd").style = "display: none;";
-    };
-
+    }
 
     fetch("/register_user", {
         method: "POST",
@@ -28,25 +32,24 @@ registerForm.addEventListener("submit", function(event) {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            "username": registerUsername.value, 
-            "email": registerEmail.value, 
+            "username": registerUsername.value,
+            "email": registerEmail.value,
             "password": registerPwd.value
         })
     })
     .then(response => {
         if (!response.ok) {
-            
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
-        if (data.Status === "User Already Exists") {
-            alert('O Email já está sendo usado!');
-            throw new Error("Usuário já existe")
+        if (data.Status === "Error") {
+            alert(data.Message);
         } else {
-            alert("Registrado com sucesso, vamo te redirecionar")
-            open("../manager.html")
+            alert("Registrado com sucesso, vamos te redirecionar");
+            window.location.href = "/manager";
+            sessionStorage.setItem("sessionToken", data.Session_JWT);
         }
     })
     .catch((error) => {

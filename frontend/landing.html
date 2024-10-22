@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrackIt</title>
     <link rel="stylesheet" href="static/css/landing.css">
+    <link rel="icon" href="static/assets/favicon.png">
 </head>
 
 <header>
@@ -89,8 +90,13 @@
             <form id="login_form">
                 <span class="close">&times;</span>
                 <input id="login_username" placeholder="Nome de usuário ou Email" type="text">
-                <input id="login_password" placeholder="Digite sua senha" type="password">
-                <a>Esqueci minha senha</a>
+                <input id="login_password" placeholder="Digite sua senha" type="password" require>
+                <div id="manter_login">
+                    <input id="stay_logged" type="checkbox" >
+                    <label for="stay_logged">Manter Login</label>
+                    
+                </div>
+                    <a>Esqueci minha senha</a>
                 <button type="submit">Entrar</button>
                 <button>Não tenho conta</button>
             </form>

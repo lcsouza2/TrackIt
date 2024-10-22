@@ -1,3 +1,5 @@
+"""Definição das rotas"""
+
 from http import HTTPStatus
 
 from fastapi import FastAPI
@@ -10,10 +12,9 @@ import schemas
 import register_login
 
 main_app = FastAPI()
-
 main_app.mount("/static", StaticFiles(directory="frontend/static"), "statics")
-
 html_templates = Jinja2Templates("frontend")
+
 
 @main_app.get("/", response_class=HTMLResponse)
 async def return_main_page(request:Request):
@@ -21,8 +22,15 @@ async def return_main_page(request:Request):
     return html_templates.TemplateResponse(request=request, name="landing.html")
 
 
+@main_app.get("/manager", response_class=HTMLResponse)
+
+
 @main_app.post("/register_user", status_code=HTTPStatus.CREATED)
-def register_user(user:schemas.User):
+async def register_user(user:schemas.User):
     """Registra o usuário no banco de dados ao receber uma requisição"""
     status = register_login.register_user(user)
     return status
+
+@main_app.get("/login")
+def verify_token(request:Request):
+    ...

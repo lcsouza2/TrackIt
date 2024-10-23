@@ -1,47 +1,81 @@
 """Módulo com funcionalidades de registro de dados e login de usuário"""
 import datetime
+from http import HTTPStatus
 import sqlite3
-from pydantic import EmailStr
+
 import bcrypt
 import fastapi
 import jwt
 import schemas
+from pydantic import EmailStr
 
 DB_ROUTE = "backend/TrackIt.db"
 
-JWT_SESSION_TOKEN = "IEyP'yQ/rQ"
+JWT_SESSION_KEY = "IEyP'yQ/rQ"
 
-JWT_REFRESH_TOKEN = "YR:Lu%,QHL"
+JWT_REFRESH_KEY = "YR:Lu%,QHL"
 
-def create_session_token(user_id:EmailStr):
-    """Cria um token de sessão"""
+JWT_REFRESH_DURATION = datetime.timedelta(days=7)
 
-    session_payload={
-        "sub": user_id, #ID do usuário que foi autorizado
-        "iat": datetime.datetime.now(datetime.timezone.utc), #Data e hora da criação do token
+JWT_SESSION_DURATION = datetime.timedelta(hours=1)
 
-        #Data e hora de validade do token
-        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
+
+
+def get_user_id(user_email: EmailStr) -> int:
+    """
+    Consulta o id do usuário
+    Args:
+        Email: Email que o usuário usou para se cadastrar
+    Returns:
+        ID: Numero inteiro que é o ID
+    """
+
+    connection = sqlite3.connect(DB_ROUTE)
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT id_user FROM usuario WHERE email = ?", (user_email,))
+
+    return cursor.fetchone()[0]
+
+
+def create_token(user_id: EmailStr, secret: str, duration: datetime.timedelta) -> str:
+    """
+    Cria um JWT
+    Args:
+        user_id  : Email do usuário
+        secret   : Chave para codificação
+        duration : Duração do token em timedelta
+    Returns
+        Str com o token
+    """
+    create_time = datetime.datetime.now(datetime.timezone.utc)
+
+    payload={
+        "sub": get_user_id(user_id), #ID do usuário que foi autorizado
+        "iat": create_time, #Data e hora da criação do token
+        "exp": create_time + duration #Data e hora de validade do token
     }
 
-    return jwt.encode(session_payload, JWT_SESSION_TOKEN) #Retorna o token criado
+    return jwt.encode(payload, secret)
 
 
-def create_refresh_token(user_id:EmailStr):
-    """Cria um token de refresh"""
-
-    session_payload={
-        "sub": user_id, #ID do usuário autorizado
-        "iat": datetime.datetime.now(datetime.timezone.utc), #Data e hora de ciração do token
-        #Data e hora de validade do token
-        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
-    }
-
-    return jwt.encode(session_payload, JWT_REFRESH_TOKEN) #Retorna o token criado
-
-
-def register_user(user:schemas.User):
-    """Registra o usuário no banco de dados"""
+def register_user(user: schemas.User, response: fastapi.Response):
+    """
+    Registra o usuário no banco de dados
+    Args:
+        Objeto da classe User
+            Class Data:
+                username : str
+                email    : EmailStr
+                password : str
+    Returns:
+        {
+            Status      : Resultado da operação
+            Message     : Descrição do erro caso ocorra
+            Session_JWT : Token de sessão para validar o login            
+        }
+        
+    """
 
     connection = sqlite3.connect(DB_ROUTE) #Conecta no banco
     cursor = connection.cursor() #Cria o cursor
@@ -63,48 +97,75 @@ def register_user(user:schemas.User):
         connection.commit()
 
         #Retorna o status da requisição e o token caso cadastre devidamente
-        return {"Status" : "Success",
-                "Session_JWT" : create_session_token(user.email)}
-
-    except sqlite3.IntegrityError: #Erro de chave primária ou Unique
-
-        #Retorna o Status do erro e uma mensagem descrevendo
-        return {"Status" : "Error",
-                "Message" : "Email já registrado!"}
+        response.set_cookie(
+            key="session_token",
+            value=create_token(user.email, JWT_SESSION_KEY, JWT_SESSION_DURATION),
+            httponly=True,
+            samesite="strict",
+            expires=datetime.datetime.now(datetime.timezone.utc) + JWT_SESSION_DURATION
+        )
+        
+    except sqlite3.IntegrityError as exc: #Erro de chave primária ou Unique
+        raise fastapi.HTTPException(400, "Email already used") from exc
 
     finally:
         connection.close() #Fecha a conexão com ou sem erros
 
 
-
-def login(user:schemas.User, response:fastapi.Response):
+def login(user: schemas.UserLogin, response: fastapi.Response, request: fastapi.Request):
     """
-    Cria um cookie que só pode ser acessado por HTTP no navegador, 
+    
+    Verifica a senha cria um cookie que só pode ser acessado por HTTP no navegador, 
     esse cookie armazena o valor do token de refresh
+    Args:
+        user: Objeto da classe UserLogin
+            Class Data:
+                email       : str
+                password    : str
+                stay_logged : bool
+        
+        response: Objeto da classe response do FastAPI (Gerado automaticamente quando há requisição)
+        
+    Returns:
+        Status      : Resultado da operação
+        Message     : Descrição do erro caso ocorra
+        Session_JWT : Token de sessão do usuário
     """
 
     conn = sqlite3.connect(DB_ROUTE)
     cur = conn.cursor()
 
-
     cur.execute("SELECT senha_hash FROM usuario WHERE email = ?", (user.email,))
     result = cur.fetchone()
 
-    if not result:
-        return {"Status" : "Error",
-                "Message" : "Email Não encontrado"}
-    
+    if result is None:
+        raise fastapi.HTTPException(404, "Email not found")
 
-    # if bcrypt.checkpw(user.password, result):
+    if bcrypt.checkpw(user.password.encode(), result[0]):
+        response.delete_cookie("session_token")
 
-    #         if user.stay_loged:
-    #         response.set_cookie(
-    #             key="refresh_token",
-    #             value=create_refresh_token(user.email),
-    #             httponly=True,
-    #         ) 
+        response.set_cookie(
+            key="session_token",
+            value=create_token(user.email, JWT_SESSION_KEY, JWT_SESSION_DURATION),
+            httponly=True,
+            samesite="strict",
+            expires=datetime.datetime.now(datetime.timezone.utc) + JWT_SESSION_DURATION
+        )
 
-    #     return {"Status" : "Success"}
+        response.delete_cookie("refresh_token")
 
-    
+        if user.stay_logged:
+            token = request.cookies.get("refresh_token")
 
+            if token is None:
+                response.set_cookie(
+                    key="refresh_token",
+                    value=create_token(user.email, JWT_REFRESH_KEY, JWT_REFRESH_DURATION),
+                    httponly=True,
+                    samesite="strict",
+                    expires=datetime.datetime.now(datetime.timezone.utc) + JWT_REFRESH_DURATION
+                    )
+
+        return HTTPStatus.OK
+
+    raise fastapi.HTTPException(401, "Invalid password")

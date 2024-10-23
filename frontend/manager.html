@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,38 @@
     <link rel="stylesheet" href="static/css/manager.css">
     <link rel="icon" href="static/assets/favicon.png">
 </head>
+
+<header>
+    <h1 id="logo">TrackIt</h1>
+    <h3 id="expenses-tracker">Você Já gastou X essa semana</h3>
+</header>
+
 <body>
-    TEste
+    <div class="spents">
+        <div class="spents-content" id="spents-analysis">
+            <span>Gasto dessa semana: #</span>
+            <span>Gasto desse mês: #</span>
+            <span>Categoria com maior gasto: #</span>
+            <button>Gerar relatório de gastos</button>
+            <span>Dica: #</span>
+        </div>
+    </div>
+
+    <div class="spents">
+        <div class="spents-content" id="installments-analysis">
+            <span>Parcelamentos ativos: $</span>
+            <button>Ver todos os parcelamentos</button>
+        </div>
+    </div>
+
+    <button id="menu-options">+</button>
+
+    <canvas id="chart-space">
+        Chart of the silva
+    </canvas>
+    
+    <div id="chart-colors-refrences">
+        Insert colors with JavaScript
+    </div>
 </body>
 </html>

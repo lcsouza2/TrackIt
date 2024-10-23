@@ -89,10 +89,10 @@
             <h2>Que bom te ver denovo :)</h2>
             <form id="login_form">
                 <span class="close">&times;</span>
-                <input id="login_username" placeholder="Nome de usuário ou Email" type="text">
-                <input id="login_password" placeholder="Digite sua senha" type="password" require>
+                <input id="login_email" placeholder="Digite seu Email" type="email" required>
+                <input id="login_password" placeholder="Digite sua senha" type="password" required>
                 <div id="manter_login">
-                    <input id="stay_logged" type="checkbox" >
+                    <input id="stay_logged" type="checkbox" value="true">
                     <label for="stay_logged">Manter Login</label>
                     
                 </div>
@@ -109,9 +109,9 @@
             <span class="close">&times;</span>
             <form id="form_register">
                 <input id="register_username" placeholder="Seu nome de usuário" type="text" required>
-                <input id="register_email" placeholder="Seu Email (Opcional)" type="email">
-                <input id="register_pwd" placeholder="Digite uma senha bem segura" type="password" required>
-                <input id="register_pwd_confirm" placeholder="Repita a sua senha bem segura" type="password" required>
+                <input id="register_email" placeholder="Seu Email" type="email" required>
+                <input id="register_pwd" placeholder="Digite sua senha" type="password" required>
+                <input id="register_pwd_confirm" placeholder="Repita a sua senha " type="password" required>
                 <span id="no_match_pwd" style="display: none;" >As senhas não coincidem!</span>
                 <button type="submit">Vamos Começar!</button>
             </form>

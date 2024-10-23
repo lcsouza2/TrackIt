@@ -10,3 +10,7 @@ class PublicUser(BaseModel):
     username: str
     email: EmailStr
     
+class UserLogin(BaseModel):
+    email : EmailStr
+    password : str
+    stay_logged : bool

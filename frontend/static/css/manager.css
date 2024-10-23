@@ -60,6 +60,7 @@ header {
 .spents {
     margin-left: 50px;
     margin-bottom: 30px;
+    margin-top: 5%;
     max-width: 400px;
 
     border-width: 4px;
@@ -103,13 +104,14 @@ header {
 
 #menu-options {
     display: flex;
+    position: absolute;
+
     width: 70px;
     height: 70px;
     margin-left: 50px;
 
     border-color: #4050FC;
     border-style: solid;
-
 
     justify-content: center;
     align-items: center;
@@ -120,6 +122,8 @@ header {
     font-size: 30px;
 
     animation: rotate-back;
+
+    bottom: 5%;
 }
 
 #menu-options:hover {
@@ -129,4 +133,23 @@ header {
 
 #menu-options:not(:hover) {
     animation: rotate-back 1s forwards;
+}
+
+
+#chart-space {
+    position: absolute;
+    background-color: #4050FC;
+
+    right: 10%;
+    top: 15%;
+    width: 50%;
+    height: 70%;
+}
+
+#chart-colors-references {
+    position: absolute;
+    display: flex;
+    color: white;
+    right: 10%;
+    top: 50%;
 }

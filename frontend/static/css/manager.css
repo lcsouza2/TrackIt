@@ -40,7 +40,6 @@ header {
     justify-content: space-between;
     width: 100%;
     max-height: 100px;
-    margin-inline: 0px;
     font-family: "Lalezar";
 }
 
@@ -59,8 +58,8 @@ header {
 
 .spents {
     margin-left: 50px;
-    margin-bottom: 30px;
-    margin-top: 5%;
+    margin-bottom: 2%;
+    margin-top: 2%;
     max-width: 400px;
 
     border-width: 4px;
@@ -104,46 +103,81 @@ header {
 
 #menu-options {
     display: flex;
+    flex-direction: row;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-left: 50px;
+    
+}
+
+#menu-expand {
     position: absolute;
 
     width: 70px;
     height: 70px;
-    margin-left: 50px;
 
     border-color: #4050FC;
     border-style: solid;
 
-    justify-content: center;
-    align-items: center;
-
     border-radius: 100%;
+
+    padding: 0px;
+    margin: 0px;
 
     color: #4050FC;
     font-size: 30px;
 
-    animation: rotate-back;
-
     bottom: 5%;
+    z-index: 1000;
 }
 
-#menu-options:hover {
-    animation: rotate 1s forwards;
+@keyframes teste {
+    0% {
+        transition:linear;
+    }
+    
 }
 
 
-#menu-options:not(:hover) {
-    animation: rotate-back 1s forwards;
-}
+#options{
+    display: flex;
+    visibility: hidden;
 
-
-#chart-space {
+    flex-direction: row;
+    
     position: absolute;
     background-color: #4050FC;
+    
+    width: 650px;
+    height: 70px;
 
-    right: 10%;
-    top: 15%;
-    width: 50%;
-    height: 70%;
+
+    margin-left: 50px;
+    border-radius: 50px;
+
+    bottom: 5%;
+    place-items: center space-between;
+    left: 0px;
+}
+
+#options span {
+    cursor: pointer;
+    font-family: "Lalezar";
+    font-weight: lighter;
+    font-size: 17px;
+
+    display: flex;
+    align-items: center;
+
+    padding-inline: 30px;
+
+    color: #FFFFFF;
+}
+
+#options span:first-of-type {
+    margin-left: 50px;
 }
 
 #chart-colors-references {
@@ -152,4 +186,13 @@ header {
     color: white;
     right: 10%;
     top: 50%;
+}
+
+#chart {
+    position: absolute;
+    right: 10%;
+    top: 20%;
+
+    max-width: 40%;
+    max-height: 80%;
 }

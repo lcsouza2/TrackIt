@@ -7,6 +7,7 @@
     <title>Minhas despesas</title>
     <link rel="stylesheet" href="static/css/manager.css">
     <link rel="icon" href="static/assets/favicon.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <header>
@@ -32,18 +33,18 @@
         </div>
     </div>
 
-    <button id="menu-options">+</button>
-
-    <div id="chart-space">
-        <canvas id="chart">
-            Chart of the silva
-        </canvas>
-        <div id="chart-colors-references">
-            <h1>Texto</h1>
-        </div>
+    <div id="menu-options">
+        <button id="menu-expand">+</button>
+        <nav id="options">
+            <span id="add_expense">Adicionar Despesa</span>
+            <span id="rmv_expense">Remover Despesa</span>
+            <span id="alt_expense">Alterar Uma Despesa</span>
+        </nav>
     </div>
+
+    <canvas id="chart">
+    </canvas>
     
-    
+    <script src="static/js/manager_animations.js"></script>
 </body>
-<script href="static/js/manager_animations.js"></script>
 </html>

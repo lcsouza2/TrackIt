@@ -1,13 +1,12 @@
 """Módulo com funcionalidades de registro de dados e login de usuário"""
 import datetime
-from http import HTTPStatus
 import sqlite3
+from http import HTTPStatus
 
 import bcrypt
 import fastapi
-import jwt
 import schemas
-from pydantic import EmailStr
+import utils
 
 DB_ROUTE = "backend/TrackIt.db"
 
@@ -18,45 +17,6 @@ JWT_REFRESH_KEY = "YR:Lu%,QHL"
 JWT_REFRESH_DURATION = datetime.timedelta(days=7)
 
 JWT_SESSION_DURATION = datetime.timedelta(hours=1)
-
-
-
-def get_user_id(user_email: EmailStr) -> int:
-    """
-    Consulta o id do usuário
-    Args:
-        Email: Email que o usuário usou para se cadastrar
-    Returns:
-        ID: Numero inteiro que é o ID
-    """
-
-    connection = sqlite3.connect(DB_ROUTE)
-    cursor = connection.cursor()
-
-    cursor.execute("SELECT id_user FROM usuario WHERE email = ?", (user_email,))
-
-    return cursor.fetchone()[0]
-
-
-def create_token(user_id: EmailStr, secret: str, duration: datetime.timedelta) -> str:
-    """
-    Cria um JWT
-    Args:
-        user_id  : Email do usuário
-        secret   : Chave para codificação
-        duration : Duração do token em timedelta
-    Returns
-        Str com o token
-    """
-    create_time = datetime.datetime.now(datetime.timezone.utc)
-
-    payload={
-        "sub": get_user_id(user_id), #ID do usuário que foi autorizado
-        "iat": create_time, #Data e hora da criação do token
-        "exp": create_time + duration #Data e hora de validade do token
-    }
-
-    return jwt.encode(payload, secret)
 
 
 def register_user(user: schemas.User, response: fastapi.Response):
@@ -99,7 +59,7 @@ def register_user(user: schemas.User, response: fastapi.Response):
         #Retorna o status da requisição e o token caso cadastre devidamente
         response.set_cookie(
             key="session_token",
-            value=create_token(user.email, JWT_SESSION_KEY, JWT_SESSION_DURATION),
+            value=utils.create_token(user.email, JWT_SESSION_KEY, JWT_SESSION_DURATION),
             httponly=True,
             samesite="strict",
             expires=datetime.datetime.now(datetime.timezone.utc) + JWT_SESSION_DURATION
@@ -146,7 +106,7 @@ def login(user: schemas.UserLogin, response: fastapi.Response, request: fastapi.
 
         response.set_cookie(
             key="session_token",
-            value=create_token(user.email, JWT_SESSION_KEY, JWT_SESSION_DURATION),
+            value=utils.create_token(user.email, JWT_SESSION_KEY, JWT_SESSION_DURATION),
             httponly=True,
             samesite="strict",
             expires=datetime.datetime.now(datetime.timezone.utc) + JWT_SESSION_DURATION
@@ -160,7 +120,7 @@ def login(user: schemas.UserLogin, response: fastapi.Response, request: fastapi.
             if token is None:
                 response.set_cookie(
                     key="refresh_token",
-                    value=create_token(user.email, JWT_REFRESH_KEY, JWT_REFRESH_DURATION),
+                    value=utils.create_token(user.email, JWT_REFRESH_KEY, JWT_REFRESH_DURATION),
                     httponly=True,
                     samesite="strict",
                     expires=datetime.datetime.now(datetime.timezone.utc) + JWT_REFRESH_DURATION

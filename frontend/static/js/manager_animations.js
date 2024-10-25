@@ -2,6 +2,92 @@ let buttonStatus = false;
 let buttonMenu = document.getElementById("menu-expand")
 let menuOptions = document.getElementById("options")
 
+function openPopup(id) {
+    document.querySelector(".popup").classList.add('blur');
+    document.getElementById(id).style.display = "flex";
+}
+
+function closePopup(id) {
+    document.querySelector(".popup").classList.remove("blur");
+    document.getElementById(id).style.display = 'none';
+    document.getElementById(id).style.animation = '';
+}
+
+document.querySelectorAll('.close').forEach(function(closeButton) {
+    closeButton.addEventListener('click', function() {
+        closePopup(this.closest('.popup').id);
+    });
+});
+
+
+document.getElementById("add-expense").addEventListener("click", function(){
+    openPopup("create-expense");
+})
+
+let expenseType = document.getElementById("add-expense-type")
+let otherFields = document.getElementById("add-expense-other-fields")
+
+expenseType.addEventListener("change", function(){
+    if (expenseType.value === "Comum") {
+
+        otherFields.classList.remove('parcelamento-expanded');
+
+        setTimeout(() => {
+            otherFields.classList.add('comum-expanded')
+            otherFields.innerHTML = `
+                <label for="add-expense-description"></label>
+                <input type="text" id="add-expense-description" placeholder="Dê uma breve descrição sobre a despesa" required>
+                
+                <input type="number" id="add-expense-value" placeholder="Digite o o valor da despesa" required>
+                
+                <label for="add-expense-date">Selecione a data da despesa</label>
+                <input type="date" id="add-expense-date" required>
+                
+                <label for="category">Selecione a categoria da despesa</label>
+                <select name="category" id="add-expense-category">
+                    <option value="home-bills" style="color: #ff595e;">Contas da casa</option>
+                    <option value="food" style="color: #ffca3a;">Comida</option>
+                    <option value="health" style="color: #8ac926;">Saúde</option>
+                    <option value="taxes" style="color: #1982c4;">Impostos</option>
+                    <option value="new" style="color: #6a4c93;">Nova categoria</option>
+                </select>
+            `
+        }, 200);
+        
+        
+    } else {
+
+        
+        otherFields.classList.remove('comum-expanded');
+        setTimeout(() => {
+            document.getElementById("add-expense-other-fields").innerHTML = ``
+            otherFields.classList.add('parcelamento-expanded');
+            document.getElementById("add-expense-other-fields").innerHTML = 
+            ` 
+                <input type="text" id="add-expense-description" placeholder="Dê uma breve descrição sobre a despesa" required>        
+                <input type="number" id="add-expense-installment-value" placeholder="Digite o valor de cada parcela" required>
+                <input type="number" id="add-expense-installments" placeholder="Digite a quantidade de parcelas" required>
+                <input type="number" id="add-expense-interests" placeholder="Digite a porcentagem de juros" required>
+                
+                <label for="add-expense-date">Informe a data de início</label>
+                <input type="date" id="add-expense-date" required>
+
+                <label for="category">Selecione a categoria do parcelamento</label>
+                <select name="category" id="add-installment-category">
+                    <option value="home-bills" style="color: #ff595e;">Contas da casa</option>
+                    <option value="food" style="color: #ffca3a;">Comida</option>
+                    <option value="health" style="color: #8ac926;">Saúde</option>
+                    <option value="taxes" style="color: #1982c4;">Impostos</option>
+                    <option value="new" style="color: #6a4c93;">Nova categoria</option>
+                </select>
+            `
+        }, 200);
+
+
+    }
+}
+)
+
 
 buttonMenu.addEventListener("click", function(){
     if (buttonStatus !== true) {
@@ -9,7 +95,7 @@ buttonMenu.addEventListener("click", function(){
 
         menuOptions.animate([
             {width: "70px", visibility:"hidden"},
-            {width: "650px", visibility:"visible"}
+            {width: "650px", visibility:"visible"},
         ],
             {
                 duration: 500,
@@ -74,7 +160,7 @@ function criaGrafico() {
     const ctx = canvas.getContext('2d');
 
     // Cria o gráfico de pizza
-    const meuGraficoPizza = new Chart(ctx, {
+    const enpensesChart = new Chart(ctx, {
         type: 'pie', // Tipo de gráfico
         data: {
             labels: ['Categoria 1', 'Categoria 2', 'Categoria 3'], // Labels das fatias

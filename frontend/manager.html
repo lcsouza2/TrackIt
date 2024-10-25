@@ -17,8 +17,8 @@
 
 <body>
     <div class="spents">
-        <div class="spents-content" id="spents-analysis">
-            <span>Gasto dessa semana: #</span>
+        <div class="spents-content"  id="spents-analysis">
+            <span>Gasto de hoje: #</span>
             <span>Gasto desse mês: #</span>
             <span>Categoria com maior gasto: #</span>
             <button>Gerar relatório de gastos</button>
@@ -36,15 +36,47 @@
     <div id="menu-options">
         <button id="menu-expand">+</button>
         <nav id="options">
-            <span id="add_expense">Adicionar Despesa</span>
-            <span id="rmv_expense">Remover Despesa</span>
-            <span id="alt_expense">Alterar Uma Despesa</span>
+            <span id="add-expense">Adicionar Despesa</span>
+            <span id="rmv-expense">Remover Despesa</span>
+            <span id="alt-expense">Alterar Uma Despesa</span>
         </nav>
     </div>
 
-    <canvas id="chart">
-    </canvas>
+    <canvas id="chart"></canvas>
+
+    <div id="create-expense" class="popup">
+        <div id="content-add-expense" class="popup-content">
+            <span class="close">&times;</span>
+            <h2>Gastando mais dinheiro né...🤨</h2> 
+            <form id="form-create-expense">
+                <select name="nome" id="add-expense-type">
+                    <option value="Comum">Comum</option>
+                    <option value="Parcelamento">Parcelamento</option>
+                </select>
+                <label for="expense-type">Escolha o tipo da despesa</label>
+                <div id="add-expense-other-fields" class="comum-expanded">
+                    <label for="add-expense-description"></label>
+                    <input type="text" id="add-expense-description" placeholder="Dê uma breve descrição sobre a despesa" required>
+                    
+                    <input type="number" id="add-expense-value" placeholder="Digite o o valor da despesa" required>
+                    
+                    <label for="add-expense-date">Selecione a data da despesa</label>
+                    <input type="date" id="add-expense-date" required>
+                    
+                    <label for="category">Selecione a categoria da despesa</label>
+                    <select name="category" id="add-expense-category">
+                        <option value="home-bills" style="color: #ff595e;">Contas da casa</option>
+                        <option value="food" style="color: #ffca3a;">Comida</option>
+                        <option value="health" style="color: #8ac926;">Saúde</option>
+                        <option value="taxes" style="color: #1982c4;">Impostos</option>
+                        <option value="new" style="color: #6a4c93;">Nova categoria</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
     
     <script src="static/js/manager_animations.js"></script>
+    <script src="static/js/expenses_managing.js"></script>
 </body>
 </html>

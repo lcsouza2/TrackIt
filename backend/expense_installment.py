@@ -1,11 +1,8 @@
+"""Módulo para gerenciar as despesas e parcelamentos"""
 import datetime
 import sqlite3
 
-import jwt
-import register_login
 import schemas
-import utils
-from fastapi import Request, Response
 from fastapi.exceptions import HTTPException
 
 DB_ROUTE = "backend/TrackIt.db"
@@ -18,74 +15,45 @@ JWT_REFRESH_DURATION = datetime.timedelta(days=7)
 
 JWT_SESSION_DURATION = datetime.timedelta(hours=1)
 
-def create_expense(expense:schemas.Expense, request:Request, response:Response):
+def create_expense(user_id:int, expense:schemas.Expense):
     """Cria uma despesa no banco de dados"""
-    connection = sqlite3.connect(DB_ROUTE)
-    cursor = connection.cursor()
 
-    refresh_token = request.cookies.get("refresh_token")
-    session_token = request.cookies.get("session_token")
+    with sqlite3.connect(DB_ROUTE) as connection:
+        cursor = connection.cursor()
 
-    user_id = None
+        cursor.execute(
+            """
+            SELECT id_categoria FROM categoria
+                WHERE nome_categoria  = ?
+                AND id_user_categoria = ?
+            """,
+            (expense.category, user_id))
 
-    if not session_token and refresh_token:
-            
-        user_id = utils.get_user_from_token(session_token, JWT_REFRESH_KEY)
+        result = cursor.fetchone()
 
-        response.set_cookie(
-            key="session_token",
-            value=utils.create_token(user_id.get("sub"), JWT_SESSION_KEY, JWT_SESSION_DURATION),#type:ignore
-            httponly=True,
-            samesite="strict",
-            expires=datetime.datetime.now(datetime.timezone.utc) + JWT_SESSION_DURATION
-        )
+        if result is None:
+            raise HTTPException(404, "Category not found")
 
-    elif not session_token and not refresh_token:
-        raise HTTPException(401, "User not logged")
-    else:
-        user_id = utils.get_user_from_token(session_token, JWT_SESSION_KEY)
-    
-    try:
-        cursor.execute("""SELECT id_categoria FROM categoria
-                            WHERE nome_categoria   = ?
-                            AND id_user_categoria  = ?""",
-                            (expense.category, user_id))
+        id_categoria = result[0]
 
-        id_categoria = cursor.fetchone()[0]
+        date = datetime.datetime.strptime(expense.date, "%Y-%m-%d").date()
 
-        if id_categoria is None:
-            try:
-                cursor.execute("""INSERT INTO categoria(id_user_categoria, nome_categoria, cor_categoria)
-                                VALUES(?, ?, ?)""",
-                                (user_id, expense.category, expense.category_color))
-            except Exception as exc:
-                raise HTTPException(502, str(exc))
-            finally:
-                connection.commit()
-                connection.close()
-    except Exception as exc:
-        raise HTTPException(502, str(exc))
-    finally:
-        cursor.execute("""SELECT id_categoria FROM categoria
-                        WHERE nome_categoria    = ? 
-                        AND id_user_categoria = ?""",
-                        (expense.category, user_id))
+        try:
+            cursor.execute(
+                """
+                INSERT INTO despesa(
+                    id_categoria_despesa,
+                    id_user_despesa, 
+                    data_despesa, 
+                    valor_despesa, 
+                    obs_despesa
+                    )
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (id_categoria, user_id, date, expense.value, expense.description) #type: ignore
+                )
+            connection.commit()
 
-        id_categoria = cursor.fetchone()[0]
-
-        connection.commit()
-        connection.close()
-
-
-    date = datetime.datetime.strptime(expense.date, "%Y-%m-%d").date()
-
-    cursor.execute("""INSERT INTO despesa(id_categoria_despesa,
-                                            id_user_despesa, 
-                                            data_despesa, 
-                                            valor_despesa, 
-                                            obs_despesa)
-                        VALUES (?, ?, ?, ?, ?)""",
-                    (id_categoria, user_id, date, expense.value, expense.description))
-
-    connection.commit()
-    connection.close()
+        except sqlite3.IntegrityError as exc:
+            if "UNIQUE" in str(exc):
+                raise HTTPException(409, "Expense already exists") from exc

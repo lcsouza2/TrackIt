@@ -37,8 +37,7 @@
         <button id="menu-expand">+</button>
         <nav id="options">
             <span id="add-expense">Adicionar Despesa</span>
-            <span id="rmv-expense">Remover Despesa</span>
-            <span id="alt-expense">Alterar Uma Despesa</span>
+            <span id="see-expenses">Ver Despesas</span>
         </nav>
     </div>
 
@@ -53,6 +52,7 @@
                     <option value="Comum">Comum</option>
                     <option value="Parcelamento">Parcelamento</option>
                 </select>
+                
                 <label for="expense-type">Escolha o tipo da despesa</label>
                 <div id="add-expense-other-fields" class="comum-expanded">
                     <label for="add-expense-description"></label>
@@ -65,18 +65,28 @@
                     
                     <label for="category">Selecione a categoria da despesa</label>
                     <select name="category" id="add-expense-category">
-                        <option value="home-bills" style="color: #ff595e;">Contas da casa</option>
-                        <option value="food" style="color: #ffca3a;">Comida</option>
-                        <option value="health" style="color: #8ac926;">Saúde</option>
-                        <option value="taxes" style="color: #1982c4;">Impostos</option>
-                        <option value="new" style="color: #6a4c93;">Nova categoria</option>
+                        <option value="new-category" style="color: #6a4c93;">Nova categoria</option>
                     </select>
+                    <button type="submit">Feito!</button>
                 </div>
             </form>
         </div>
     </div>
     
+    <div class="popup" id="popup-add-category">
+        <form id="new-category-form" class="popup-content">
+            <span class="close">&times;</span>
+            <input id="new-category-name" type="text" placeholder="Dê um nome para a categoria">
+            
+            <label for="new-category-color">Selecione uma cor para a categoria</label>
+            <input id="new-category-color" type="color" placeholder="Selecione uma cor para a categoria">
+            <button type="submit">Criar Categoria</button>
+        </form>
+    </div>
+
     <script src="static/js/manager_animations.js"></script>
     <script src="static/js/expenses_managing.js"></script>
+    <script src="static/js/manager_graphic.js"></script>
+    <script src="static/js/manager_data.js"></script>
 </body>
 </html>

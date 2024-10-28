@@ -21,13 +21,14 @@ class Expense(BaseModel):
     value           : float
     date            : str
     category        : str
-    category_color  : str
 
 class Installment(BaseModel):
     description     : str
     category        : str
-    category_color  : str
     quantity        : int
     inst_value      : float
     init_date       : str
-    
+
+class Category(BaseModel):
+    name            : str
+    color           : str

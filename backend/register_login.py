@@ -8,17 +8,6 @@ import fastapi
 import schemas
 import utils
 
-DB_ROUTE = "backend/TrackIt.db"
-
-JWT_SESSION_KEY = "IEyP'yQ/rQ"
-
-JWT_REFRESH_KEY = "YR:Lu%,QHL"
-
-JWT_REFRESH_DURATION = datetime.timedelta(days=7)
-
-JWT_SESSION_DURATION = datetime.timedelta(hours=1)
-
-
 def register_user(user: schemas.User, response: fastapi.Response):
     """
     Registra o usuário no banco de dados
@@ -37,7 +26,7 @@ def register_user(user: schemas.User, response: fastapi.Response):
         
     """
 
-    connection = sqlite3.connect(DB_ROUTE) #Conecta no banco
+    connection = sqlite3.connect(utils.DB_ROUTE) #Conecta no banco
     cursor = connection.cursor() #Cria o cursor
 
     #Criptografa a senha do usuário
@@ -59,12 +48,12 @@ def register_user(user: schemas.User, response: fastapi.Response):
         #Retorna o status da requisição e o token caso cadastre devidamente
         response.set_cookie(
             key="session_token",
-            value=utils.create_token(user.email, JWT_SESSION_KEY, JWT_SESSION_DURATION),
+            value=utils.create_token(user.email, utils.JWT_SESSION_KEY, utils.JWT_SESSION_DURATION),
             httponly=True,
             samesite="strict",
-            expires=datetime.datetime.now(datetime.timezone.utc) + JWT_SESSION_DURATION
+            expires=datetime.datetime.now(datetime.timezone.utc) + utils.JWT_SESSION_DURATION
         )
-        
+
     except sqlite3.IntegrityError as exc: #Erro de chave primária ou Unique
         raise fastapi.HTTPException(400, "Email already used") from exc
 
@@ -92,7 +81,7 @@ def login(user: schemas.UserLogin, response: fastapi.Response, request: fastapi.
         Session_JWT : Token de sessão do usuário
     """
 
-    conn = sqlite3.connect(DB_ROUTE)
+    conn = sqlite3.connect(utils.DB_ROUTE)
     cur = conn.cursor()
 
     cur.execute("SELECT senha_hash FROM usuario WHERE email = ?", (user.email,))
@@ -106,10 +95,10 @@ def login(user: schemas.UserLogin, response: fastapi.Response, request: fastapi.
 
         response.set_cookie(
             key="session_token",
-            value=utils.create_token(user.email, JWT_SESSION_KEY, JWT_SESSION_DURATION),
+            value=utils.create_token(user.email, utils.JWT_SESSION_KEY, utils.JWT_SESSION_DURATION),
             httponly=True,
             samesite="strict",
-            expires=datetime.datetime.now(datetime.timezone.utc) + JWT_SESSION_DURATION
+            expires=datetime.datetime.now(datetime.timezone.utc) + utils.JWT_SESSION_DURATION
         )
 
         response.delete_cookie("refresh_token")
@@ -120,10 +109,16 @@ def login(user: schemas.UserLogin, response: fastapi.Response, request: fastapi.
             if token is None:
                 response.set_cookie(
                     key="refresh_token",
-                    value=utils.create_token(user.email, JWT_REFRESH_KEY, JWT_REFRESH_DURATION),
+                    value=utils.create_token(
+                        user.email,
+                        utils.JWT_REFRESH_KEY,
+                        utils.JWT_REFRESH_DURATION
+                        ),
                     httponly=True,
                     samesite="strict",
-                    expires=datetime.datetime.now(datetime.timezone.utc) + JWT_REFRESH_DURATION
+                    expires=datetime.datetime.now(
+                        datetime.timezone.utc
+                        ) + utils.JWT_REFRESH_DURATION
                     )
 
         return HTTPStatus.OK

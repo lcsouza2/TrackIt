@@ -53,14 +53,28 @@ def get_categories(request:Request, response:Response):
     user = utils.autenticate(request, response)
     return categories.get_categories_info(user)
 
-
+#Rota para pegar informações legais
 @main_app.get("/manager/user_manager_data")
-def get_util_data():
+def get_util_data(request:Request, response:Response):
     """
     Retorna dados uteis para a página principal
     """
-    
-    
+    user_id = utils.autenticate(request, response)
+
+    results = (
+        categories.get_today_expenses(user_id),
+        categories.get_this_week_expenses(user_id),
+        categories.get_this_month_expenses(user_id),
+        categories.get_all_installments(user_id)
+    )
+
+    return {
+        "today" : results[0],
+        "this_week" : results[1],
+        "this_month" : results[2],
+        "installments" : results[3],
+    }
+
 
 #Rota para cadastrar o usuário
 @main_app.post("/register_user", status_code=HTTPStatus.CREATED)

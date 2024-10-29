@@ -61,45 +61,114 @@ def get_categories_info(user_id):
         ]
     return result
 
-def get_util_information(user_id):
+def get_today_expenses(user_id):
     """
-    Gera um relatório de despesas do usuário
+    Gera um relatório de despesas do dia atual 
     """
 
     today = datetime.datetime.now().date()
-
-    this_week_start = today-datetime.timedelta(
-        days=today.weekday() + 1
-        ) if today.weekday() > 6 else today
-
-    this_week_end = today+datetime.timedelta(days=6)
-
-    first_month_day = today.replace(day=1)
-    
-    last_month_day = today.replace(
-        day=calendar.monthrange(first_month_day.year, first_month_day.month)[1]
-        )
 
     with sqlite3.connect(utils.DB_ROUTE) as connection:
         cursor = connection.cursor()
 
         cursor.execute(
             f"""
-                SELECT SUM(valor_pagamento) FROM pagamento
-                 WHERE id_user_pagamento = ?
-                 AND data_pagamento      = '{today}';
+                SELECT SUM(p.valor_pagamento)
+                  FROM pagamento p
+                 WHERE p.data_pagamento = '{today}'
+                   AND p.id_user_pagamento = ?;
+            """,
+            (user_id,)
+            )
 
-                SELECT SUM(valor_pagamento) FROM pagamento
-                 WHERE id_user_pagamento = ?
-                 AND data_pagamento      BETWEEN '{this_week_start}' AND '{this_week_end}';
-                 
-                SELECT SUM(valor_pagamento) FROM pagamento
-                 WHERE id_user_pagamento = ?
-                 AND data_pagamento      BETWEEN '{first_month_day}' AND '{last_month_day}';
-                  
-                SELECT COUNT(*) FROM parcelamento
+        result = cursor.fetchone()
+        if result is not None:
+            return result
+        return 0
+
+
+def get_this_week_expenses(user_id):
+    """
+    Retorna as despesas da semana de um usuário
+    """
+
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
+        cursor = connection.cursor()
+
+        today = datetime.datetime.now().date()
+
+
+        this_week_start = today-datetime.timedelta(
+        days=today.weekday() + 1
+        ) if today.weekday() > 6 else today
+
+    this_week_end = today+datetime.timedelta(days=6)
+
+    cursor.execute(
+        f"""
+            SELECT SUM(p.valor_pagamento) 
+                FROM pagamento p
+                WHERE p.id_user_pagamento = ?
+                AND p.data_pagamento BETWEEN '{this_week_start}' AND '{this_week_end}';
+        """,
+        (user_id,)
+    )
+
+    result = cursor.fetchone()
+    if result is not None:
+        return result
+    return 0
+
+
+def get_this_month_expenses(user_id):
+    """
+        Pega o valor total de gasto de um usuário
+    """
+
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
+        cursor = connection.cursor()
+
+        today = datetime.datetime.now().date()
+
+        first_month_day = today.replace(day=1)
+
+        last_month_day = today.replace(
+            day=calendar.monthrange(first_month_day.year, first_month_day.month)[1]
+            )
+
+        cursor.execute(
+            f"""
+                SELECT SUM(p.valor_pagamento) 
+                    FROM pagamento p
+                    WHERE p.id_user_pagamento = ?
+                    AND p.data_pagamento BETWEEN '{first_month_day}' AND '{last_month_day}';
+            """,
+            (user_id,)
+        )
+
+        result = cursor.fetchone()
+        if result is not None:
+            return result
+        return 0
+
+
+def get_all_installments(user_id):
+    """
+        Busca todos os parcelamentos de um usuário
+    """
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+                SELECT COUNT(*)
+                  FROM parcelamento
                  WHERE id_user_parcelamento = ?;
             """,
-            (user_id, user_id, user_id)
-            )
-        
+            (user_id,)
+        )
+
+        result = cursor.fetchone()
+        if result is not None:
+            return result
+        return 0

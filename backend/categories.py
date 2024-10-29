@@ -73,17 +73,17 @@ def get_today_expenses(user_id):
 
         cursor.execute(
             f"""
-                SELECT SUM(p.valor_pagamento)
-                  FROM pagamento p
-                 WHERE p.data_pagamento = '{today}'
-                   AND p.id_user_pagamento = ?;
+                SELECT SUM(d.valor_despesa)
+                  FROM despesa d
+                 WHERE d.data_despesa = '{today}'
+                   AND d.id_user_despesa = ?;
             """,
             (user_id,)
             )
 
         result = cursor.fetchone()
         if result is not None:
-            return result
+            return result[0]
         return 0
 
 
@@ -96,28 +96,25 @@ def get_this_week_expenses(user_id):
         cursor = connection.cursor()
 
         today = datetime.datetime.now().date()
+        
+        week_day = today.weekday()  # No padrão de datetime, segunda-feira é 0, domingo é 6
+        week_start = today - datetime.timedelta(days=(week_day + 1) % 7)
+        week_end = week_start + datetime.timedelta(days=6)
 
+        cursor.execute(
+            f"""
+                SELECT SUM(d.valor_despesa) 
+                FROM despesa d
+                WHERE d.id_user_despesa = ?
+                AND d.data_despesa BETWEEN '{week_start}' AND '{week_end}';
+            """,
+            (user_id,)
+        )
 
-        this_week_start = today-datetime.timedelta(
-        days=today.weekday() + 1
-        ) if today.weekday() > 6 else today
-
-    this_week_end = today+datetime.timedelta(days=6)
-
-    cursor.execute(
-        f"""
-            SELECT SUM(p.valor_pagamento) 
-                FROM pagamento p
-                WHERE p.id_user_pagamento = ?
-                AND p.data_pagamento BETWEEN '{this_week_start}' AND '{this_week_end}';
-        """,
-        (user_id,)
-    )
-
-    result = cursor.fetchone()
-    if result is not None:
-        return result
-    return 0
+        result = cursor.fetchone()
+        if result is not None:
+            return result[0]
+        return 0
 
 
 def get_this_month_expenses(user_id):
@@ -138,17 +135,17 @@ def get_this_month_expenses(user_id):
 
         cursor.execute(
             f"""
-                SELECT SUM(p.valor_pagamento) 
-                    FROM pagamento p
-                    WHERE p.id_user_pagamento = ?
-                    AND p.data_pagamento BETWEEN '{first_month_day}' AND '{last_month_day}';
+                SELECT SUM(d.valor_despesa) 
+                    FROM despesa d
+                    WHERE d.id_user_despesa = ?
+                    AND d.data_despesa BETWEEN '{first_month_day}' AND '{last_month_day}';
             """,
             (user_id,)
         )
 
         result = cursor.fetchone()
         if result is not None:
-            return result
+            return result[0]
         return 0
 
 
@@ -170,5 +167,33 @@ def get_all_installments(user_id):
 
         result = cursor.fetchone()
         if result is not None:
-            return result
+            return result[0]
+        return 0
+    
+def get_biggest_category(user_id):
+    """
+        Busca a categoria com maior gasto
+    """
+    
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+                SELECT c.nome_categoria,
+                       SUM(d.valor_despesa)
+                  FROM despesa d,
+                       categoria c
+                 WHERE d.id_categoria_despesa = c.id_categoria
+                   AND d.id_user_despesa      = ?
+                   
+                 GROUP BY c.nome_categoria
+                 ORDER BY SUM(d.valor_despesa) DESC;
+            """,
+            (user_id,)
+        )
+
+        result = cursor.fetchone()
+        if result is not None:
+            return result[0]
         return 0

@@ -32,3 +32,4 @@ class Installment(BaseModel):
 class Category(BaseModel):
     name            : str
     color           : str
+    

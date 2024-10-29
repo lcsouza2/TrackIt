@@ -65,6 +65,7 @@ def get_util_data(request:Request, response:Response):
         categories.get_today_expenses(user_id),
         categories.get_this_week_expenses(user_id),
         categories.get_this_month_expenses(user_id),
+        categories.get_biggest_category(user_id),
         categories.get_all_installments(user_id)
     )
 
@@ -72,7 +73,9 @@ def get_util_data(request:Request, response:Response):
         "today" : results[0],
         "this_week" : results[1],
         "this_month" : results[2],
-        "installments" : results[3],
+        "biggest_category" : results[3],
+        "installments" : results[4]
+
     }
 
 

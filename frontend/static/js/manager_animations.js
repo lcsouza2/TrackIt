@@ -30,7 +30,7 @@ expenseType.addEventListener("change", function() {
         otherFields.style.height = "0px"
         
         setTimeout(() => {
-            otherFields.style.height = "250px"
+            otherFields.style.height = "260px"
             otherFields.innerHTML = `
                 <label for="add-expense-description"></label>
                 <input type="text" id="add-expense-description" placeholder="Dê uma breve descrição sobre a despesa" required>
@@ -69,17 +69,17 @@ expenseType.addEventListener("change", function() {
         setTimeout(() => {
             document.getElementById("add-expense-other-fields").innerHTML = ``;
 
-            otherFields.style.height = "330px";
+            otherFields.style.height = "350px";
 
             document.getElementById("add-expense-other-fields").innerHTML = `
                 <input type="text" id="add-expense-description" placeholder="Dê uma breve descrição sobre a despesa" required>        
-                <input type="number" id="add-expense-installment-value" placeholder="Digite o valor de cada parcela" required>
-                <input type="number" id="add-expense-installments" placeholder="Digite a quantidade de parcelas" required>
-                <input type="number" id="add-expense-interests" placeholder="Digite a porcentagem de juros" required>
-                
-                <label for="add-expense-date">Informe a data de início</label>
-                <input type="date" id="add-expense-date" required>
-                
+                <input type="number" id="add-installment-value" placeholder="Digite o valor de cada parcela" required>
+                <input type="number" id="add-installments" placeholder="Digite a quantidade de parcelas" required>
+                <input type="number" id="add-interests" placeholder="Digite a porcentagem de juros" required>
+
+                <label for="add-start-date">Informe a data de início</label>
+                <input type="date" id="add-start-date" required>
+
                 <label for="category">Selecione a categoria do parcelamento</label>
                 <select name="category" id="add-installment-category">
                     <option value="new-category" style="color: #6a4c93;">Nova categoria</option>

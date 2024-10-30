@@ -55,7 +55,7 @@ def register_user(user: schemas.User, response: fastapi.Response):
         )
 
     except sqlite3.IntegrityError as exc: #Erro de chave primária ou Unique
-        raise fastapi.HTTPException(400, "Email already used") from exc
+        raise fastapi.HTTPException(409, "Email already used") from exc
 
     finally:
         connection.close() #Fecha a conexão com ou sem erros
@@ -63,7 +63,6 @@ def register_user(user: schemas.User, response: fastapi.Response):
 
 def login(user: schemas.UserLogin, response: fastapi.Response, request: fastapi.Request):
     """
-    
     Verifica a senha cria um cookie que só pode ser acessado por HTTP no navegador, 
     esse cookie armazena o valor do token de refresh
     Args:

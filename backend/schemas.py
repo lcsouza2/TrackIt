@@ -15,7 +15,6 @@ class UserLogin(BaseModel):
     password        : str
     stay_logged     : bool
 
-
 class Expense(BaseModel):
     description     : str
     value           : float

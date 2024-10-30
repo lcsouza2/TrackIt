@@ -87,7 +87,7 @@ async def register_user(user:schemas.User, response:Response):
 
 
 @main_app.post("/login")
-def verify_login(user:schemas.UserLogin, response:Response, request: Request):
+def verify_login(user:schemas.UserLogin, response:Response, request:Request):
     """Verifica o login do usuário"""
     register_login.login(user, response, request)
 

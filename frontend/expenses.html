@@ -9,7 +9,7 @@
 <body>
 
     <form id="filters-form">
-        <span id="retract-filters">&RightArrowLeftArrow;</span>
+        <span id="retract-filters">≡</span>
         <details>
             <summary>Tipo de despesa</summary>
             <div>
@@ -41,8 +41,11 @@
             </div>
         </details>
 
-        <details id="expense-category">
+        <details>
             <summary>Categoria da despesa</summary>
+            <div class="expense-category">
+
+            </div>
             <!-- Coloque suas opções de categoria aqui -->
         </details>
         
@@ -63,10 +66,10 @@
         <table id="expenses-table">
             <thead>
                 <tr>
-                    <th>Descrição</th>
+                    <th style="width: 40%;">Descrição</th>
                     <th>Valor</th>
                     <th>Data</th>
-                    <th>Categoria</th>
+                    <th style="width: 20%;" >Categoria</th>
                     <th>Excluir</th>
                     <th>Editar</th>
                 </tr>
@@ -81,12 +84,12 @@
         <table id="installments-table">
             <thead>
                 <tr>
-                    <th>Descrição</th>
+                    <th style="width: 40%;">Descrição</th>
                     <th>Valor Parcelas</th>
                     <th>Quantidade Parcelas</th>
+                    <th style="width: 20%;">Categoria</th>
                     <th>Porcentagem de Juros</th>
                     <th>Data de Início</th>
-                    <th>Categoria</th>
                 </tr>
             </thead>
             <tbody>
@@ -98,4 +101,5 @@
         </table>
     </div>
 </body>
+<script src="static/js/expenses/expenses_animations.js"></script>
 </html>

@@ -10,17 +10,25 @@ import categories
 with sqlite3.connect(utils.DB_ROUTE) as connection:
         cursor = connection.cursor()
 
-        cursor.execute(
+        cursor.executescript(
             """
-                SELECT c.nome_categoria,
-                       SUM(d.valor_despesa)
-                  FROM despesa d,
-                       categoria c
-                 WHERE d.id_categoria_despesa = c.id_categoria
-                   AND d.id_user_despesa      = 23
-                   
-                 GROUP BY c.nome_categoria
-                 ORDER BY SUM(d.valor_despesa) DESC;
+                DROP TABLE IF EXISTS pagamento;
+                
+                CREATE TABLE pagamento(
+                    id_pagamento                INTEGER   PRIMARY KEY   AUTOINCREMENT,
+                    id_user_pagamento           INTEGER         NOT NULL,
+                    id_despesa_pagamento        INTEGER             NULL,
+                    id_parcelamento_pagamento   INTEGER             NULL,
+                    numero_parcela              INTEGER             NULL,
+                    obs_pagamento               VARCHAR(100)    NOT NULL,
+                    valor_pagamento             NUMERIC(10,2)   NOT NULL,
+
+                    CONSTRAINT uq_despesa
+                        UNIQUE(id_despesa_pagamento, obs_pagamento, valor_pagamento),
+                        
+                    CONSTRAINT uq_parcelamento
+                        UNIQUE(id_parcelamento_pagamento, numero_parcela)
+                        );
             """
             
         )

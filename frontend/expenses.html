@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/expenses.css">
+    <title>Meus gastos</title>
+</head>
+<body>
+
+    <form id="filters-form">
+        <span id="retract-filters">&RightArrowLeftArrow;</span>
+        <details>
+            <summary>Tipo de despesa</summary>
+            <div>
+                <input type="checkbox" id="installments">
+                <label for="installments">Parcelamentos</label>
+            </div>
+            <div>
+                <input type="checkbox" id="normal">
+                <label for="normal">Simples</label>
+            </div>
+            <div>
+                <input type="checkbox" id="paid">
+                <label for="paid">Pago</label>
+            </div>
+            <div>
+                <input type="checkbox" id="not-paid">
+                <label for="not-paid">Não pago</label>
+            </div>
+        </details>
+            
+        <details>
+            <summary>Data da despesa</summary>
+            <div class="date-range">
+                <input type="date">
+                <label>Início</label>
+
+                <input type="date">
+                <label>Fim</label>
+            </div>
+        </details>
+
+        <details id="expense-category">
+            <summary>Categoria da despesa</summary>
+            <!-- Coloque suas opções de categoria aqui -->
+        </details>
+        
+        <details>
+            <summary>Valor da despesa</summary>
+            <div class="value-range">
+                <input type="number">
+                <label>Início</label>
+                
+                <input type="number">
+                <label>Fim</label>
+            </div>
+        </details>
+    </form> 
+
+    <div id="tables">
+
+        <table id="expenses-table">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                    <th>Categoria</th>
+                    <th>Excluir</th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    
+                </tr>
+            </tbody>
+        </table>
+
+        <table id="installments-table">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor Parcelas</th>
+                    <th>Quantidade Parcelas</th>
+                    <th>Porcentagem de Juros</th>
+                    <th>Data de Início</th>
+                    <th>Categoria</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+</body>
+</html>

@@ -1,38 +1,33 @@
-import datetime
-import calendar
+
+import json
 import sqlite3
 import utils
 
-import time
-import categories
+
+def get_expenses(user_id, filters:dict):
+    if not filters:
+        expenses_query = "SELECT * FROM despesa WHERE id_user_despesa = ?"
+        installment_query =  "SELECT * FROM parcelamento WHERE id_user_parcelamento = ?"
 
 
-with sqlite3.connect(utils.DB_ROUTE) as connection:
+
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
+
+        results = {
+            "expenses" : [],
+            "installments" : []
+        }
+
         cursor = connection.cursor()
 
-        cursor.executescript(
-            """
-                DROP TABLE IF EXISTS pagamento;
-                
-                CREATE TABLE pagamento(
-                    id_pagamento                INTEGER   PRIMARY KEY   AUTOINCREMENT,
-                    id_user_pagamento           INTEGER         NOT NULL,
-                    id_despesa_pagamento        INTEGER             NULL,
-                    id_parcelamento_pagamento   INTEGER             NULL,
-                    numero_parcela              INTEGER             NULL,
-                    obs_pagamento               VARCHAR(100)    NOT NULL,
-                    valor_pagamento             NUMERIC(10,2)   NOT NULL,
+        cursor.execute(expenses_query, (user_id,))
 
-                    CONSTRAINT uq_despesa
-                        UNIQUE(id_despesa_pagamento, obs_pagamento, valor_pagamento),
-                        
-                    CONSTRAINT uq_parcelamento
-                        UNIQUE(id_parcelamento_pagamento, numero_parcela)
-                        );
-            """
-            
-        )
+        results["expenses"] = cursor.fetchall()
 
-        result = cursor.fetchone()
-        
-        print(result)
+        cursor.execute(installment_query, (user_id,))
+
+        results["installments"] = cursor.fetchall()
+
+        print(json.dumps(results, indent=4, ensure_ascii=False))
+
+get_expenses(23, {})

@@ -2,33 +2,38 @@ from pydantic import BaseModel
 from pydantic import EmailStr
 
 class User(BaseModel):
-    username        : str
-    email           : EmailStr
-    password        : str
+    username            : str
+    email               : EmailStr
+    password            : str
 
 class PublicUser(BaseModel):
-    username        : str
-    email           : EmailStr
+    username            : str
+    email               : EmailStr
     
 class UserLogin(BaseModel):
-    email           : EmailStr
-    password        : str
-    stay_logged     : bool
+    email               : EmailStr
+    password            : str
+    stay_logged         : bool
 
 class Expense(BaseModel):
-    description     : str
-    value           : float
-    date            : str
-    category        : str
+    description         : str
+    value               : float
+    date                : str
+    category            : str
 
 class Installment(BaseModel):
-    description     : str
-    category        : str
-    quantity        : int
-    inst_value      : float
-    init_date       : str
+    description         : str
+    category            : str
+    quantity            : int
+    inst_value          : float
+    init_date           : str
 
 class Category(BaseModel):
-    name            : str
-    color           : str
-    
+    name                : str
+    color               : str
+
+class Filters(BaseModel):
+    expense_types       : list
+    expense_date        : dict
+    expense_categories  : list
+    expense_values       : dict

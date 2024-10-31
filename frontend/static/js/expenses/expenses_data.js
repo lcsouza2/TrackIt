@@ -12,20 +12,16 @@ let expenseValueInit = document.getElementById("value-start");
 let expenseValueEnd = document.getElementById("value-end");
 
 
-function getCanvasColor(canvas) {
-    let canvasColor = window.getComputedStyle(canvas).backgroundColor
-
-    return canvasColor !== "rgb(108, 117, 125)"
-}
-
 let filters = document.getElementById("filters-form")
 
-filtersForm.addEventListener("change", function(){
 
+let debounceTimer;
+
+function updateFiltersAndFetch() {
     expenseTypes = [];
-    expenseDate = {"init": expenseDateInit.value, "end" : expenseDateEnd.value};
+    expenseDate = { "init": expenseDateInit.value, "end": expenseDateEnd.value };
     expenseCategories = [];
-    expenseValues = {"init": expenseValueInit.value, "end": expenseValueEnd.value};
+    expenseValues = { "init": expenseValueInit.value, "end": expenseValueEnd.value };
 
     expenseTypeFilters.forEach(element => {
         if (element.checked) {
@@ -36,29 +32,37 @@ filtersForm.addEventListener("change", function(){
     document.querySelectorAll(".expense-category canvas").forEach(element => {
         if (getCanvasColor(element)) {
             expenseCategories.push(element.id);
-            console.log(expenseCategories)
         }
+    });
+
+    fetch("/manager/expenses/get_expenses", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            "expense_types": expenseTypes,
+            "expense_date": expenseDate,
+            "expense_categories": expenseCategories,
+            "expense_values": expenseValues
+        })
     })
-})
-
-
-
-
-
-fetch("/manager/expenses/get_expenses", {
-    method: "POST",
-    headers: {
-        "Content-Type": "apllication/json"
-    },
-    body: {
-        types: []
-    }
-})
-    
     .then(response => response.json())
-    .then(data => function(){
-        for (let i in data) {
-            console.log(i)
-        }
+    .then(data => {
+        console.log(data);
     })
+    .catch(error => console.error("Error:", error));
+}
 
+function getCanvasColor(canvas) {
+    let canvasColor = window.getComputedStyle(canvas).backgroundColor
+
+    return canvasColor !== "rgb(108, 117, 125)"
+}
+
+
+filtersForm.addEventListener("change", function(){
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updateFiltersAndFetch, 300)
+
+})

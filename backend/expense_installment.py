@@ -1,24 +1,15 @@
 """Módulo para gerenciar as despesas e parcelamentos"""
 import datetime
 import sqlite3
+import utils
 
 import schemas
 from fastapi.exceptions import HTTPException
 
-DB_ROUTE = "backend/TrackIt.db"
-
-JWT_SESSION_KEY = "IEyP'yQ/rQ"
-
-JWT_REFRESH_KEY = "YR:Lu%,QHL"
-
-JWT_REFRESH_DURATION = datetime.timedelta(days=7)
-
-JWT_SESSION_DURATION = datetime.timedelta(hours=1)
-
 def create_expense(user_id:int, expense:schemas.Expense):
     """Cria uma despesa no banco de dados"""
 
-    with sqlite3.connect(DB_ROUTE) as connection:
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
         cursor = connection.cursor()
 
         cursor.execute(
@@ -57,3 +48,10 @@ def create_expense(user_id:int, expense:schemas.Expense):
         except sqlite3.IntegrityError as exc:
             if "UNIQUE" in str(exc):
                 raise HTTPException(409, "Expense already exists") from exc
+
+
+# def get_expenses(user_id, filters:dict):
+#     with sqlite3.connect(utils.DB_ROUTE) as connection:
+        
+#         if filters.get("categorias")
+        

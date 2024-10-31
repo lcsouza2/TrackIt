@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/css/expenses.css">
+    <link rel="stylesheet" href="/static/css/expenses.css">
     <title>Meus gastos</title>
 </head>
 <body>
 
     <form id="filters-form">
         <span id="retract-filters">≡</span>
-        <details>
+        <details id="expense-type">
             <summary>Tipo de despesa</summary>
             <div>
                 <input type="checkbox" id="installments">
@@ -30,32 +30,29 @@
             </div>
         </details>
             
-        <details>
+        <details id="expense-date">
             <summary>Data da despesa</summary>
-            <div class="date-range">
-                <input type="date">
+            <div id="date-range">
+                <input id="date-start" type="date">
                 <label>Início</label>
 
-                <input type="date">
+                <input id="date-end" type="date">
                 <label>Fim</label>
             </div>
         </details>
 
-        <details>
+        <details id="expense-categories">
             <summary>Categoria da despesa</summary>
-            <div class="expense-category">
-
-            </div>
-            <!-- Coloque suas opções de categoria aqui -->
+                
         </details>
         
-        <details>
+        <details id="expense-value">
             <summary>Valor da despesa</summary>
-            <div class="value-range">
-                <input type="number">
+            <div id="value-range">
+                <input id="value-start" type="number">
                 <label>Início</label>
                 
-                <input type="number">
+                <input id="value-end" type="number">
                 <label>Fim</label>
             </div>
         </details>
@@ -101,5 +98,6 @@
         </table>
     </div>
 </body>
-<script src="static/js/expenses/expenses_animations.js"></script>
 </html>
+<script src="/static/js/expenses/expenses_animations.js"></script>
+<script src="/static/js/expenses/expenses_data.js"></script>

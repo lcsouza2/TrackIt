@@ -39,7 +39,7 @@ details {
     margin-left: 10px;
 
     cursor: pointer;
-    
+
     color: #9676F1;
     font-family: "Lalezar";
     font-size: 20px;
@@ -50,16 +50,38 @@ details div {
     font-size: 16px;
 }
 
-.expense-category {
-    max-width: 20%;
-}
-
 details div input {
     color: #9676F1;
     font-family: "Lalezar";
     margin-bottom: 15px;
     border-radius: 10px;
     border: 3px groove #9676F1;
+}
+
+#filter-categories {
+    display: flex;
+    flex-direction: column;
+}
+
+.expense-category canvas {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+}
+
+.expense-category label {
+    line-height: 0px;
+    margin: 0px;
+    padding: 0px;
+    text-wrap: nowrap;
+}
+
+.expense-category {
+    display: flex;
+    align-items: center;
+    margin: 15px;
+    font-size: large;
+    gap: 10px;
 }
 
 #tables {
@@ -77,7 +99,7 @@ details div input {
 
 
 table {
-    margin-top:50px ;
+    margin-top: 50px;
     transition: all 1s ease;
 
     width: 80%;

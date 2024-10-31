@@ -1,6 +1,7 @@
 """Definição das rotas da aplicação"""
 
 from http import HTTPStatus
+import re
 
 import categories
 import expense_installment
@@ -17,7 +18,7 @@ from fastapi.templating import Jinja2Templates
 main_app = FastAPI()
 
 #Monta o caminho para fornecer CSS e JS
-main_app.mount("/static", StaticFiles(directory="frontend/static"), "statics")
+main_app.mount("/static", StaticFiles(directory="C:/Users/Desenvolvimento/TrackIt/frontend/static"), "static")
 
 #Caminho dos arquivos HTML
 html_templates = Jinja2Templates("frontend")
@@ -43,6 +44,15 @@ async def return_manager_page(request:Request, response:Response):
     """
     utils.autenticate(request, response)
     return html_templates.TemplateResponse(request=request, name="manager.html")
+
+
+@main_app.get("/manager/expenses", response_class=HTMLResponse)
+async def return_expenses(request:Request, response:Response):
+    """
+    Autentica o usuário e retorna a página de despesas
+    """
+    utils.autenticate(request, response)
+    return html_templates.TemplateResponse(request=request, name="expenses.html")
 
 
 @main_app.get("/manager/user_categories")
@@ -78,6 +88,12 @@ def get_util_data(request:Request, response:Response):
 
     }
 
+#Rota para popular as tabelas
+@main_app.post("/manager/expenses/get_expenses")
+async def get_expenses(request:Request, response:Response):
+    """Retorna as despesas com base nos filtros lá no front"""
+    user = utils.autenticate(request, response)
+    
 
 #Rota para cadastrar o usuário
 @main_app.post("/register_user", status_code=HTTPStatus.CREATED)

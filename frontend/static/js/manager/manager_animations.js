@@ -16,9 +16,12 @@ document.querySelectorAll('.close').forEach(function(closeButton) {
     });
 });
 
-
 document.getElementById("add-expense").addEventListener("click", function(){
     openPopup("create-expense");
+})
+
+document.getElementById("see-expenses").addEventListener("click", function(){
+    location.href = "/manager/expenses"
 })
 
 let expenseType = document.getElementById("add-expense-type")

@@ -48,9 +48,10 @@ formCreateExpense.addEventListener("submit", function(event){
     event.preventDefault();
 
     if (expenseCategory.value === "new-category") {
-        openPopup(popup-add-category);
+        openPopup("popup-add-category");
         formCreateCategory.addEventListener("submit", function(event) {
-            fetch("/manager/create_ctaegory", {
+            event.preventDefault();
+            fetch("/manager/create_category", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -71,7 +72,7 @@ formCreateExpense.addEventListener("submit", function(event){
                             "description": expenseDescription.value,
                             "value": expenseValue.value,
                             "date": expenseDate.value,
-                            "category" : nameNewCategory
+                            "category" : nameNewCategory.value
                         })
                     })
                     .then(response => {

@@ -94,6 +94,7 @@ def get_expenses(user_id, filters:schemas.Filters):
 
     expenses_query = """
                     SELECT 
+                        d.id_despesa,
                         d.obs_despesa, 
                         d.valor_despesa, 
                         d.data_despesa, 
@@ -107,7 +108,8 @@ def get_expenses(user_id, filters:schemas.Filters):
 
 
     installment_query =  """
-                        SELECT 
+                        SELECT
+                            p.id_parcelamento,
                             p.obs_parcelamento,
                             p.valor_parcelas,
                             p.qtd_parcelas,
@@ -125,22 +127,49 @@ def get_expenses(user_id, filters:schemas.Filters):
 
     if filters.expense_types:
         if "paid" in filters.expense_types:
-            expenses_query += "AND p.id_despesa_pagamento IS NOT NULL"
-            installment_query += "AND pag.id_parcelamento_pagamento IS NOT NULL"
+            expenses_query += "AND p.id_despesa_pagamento IS NOT NULL "
+            installment_query += "AND pag.id_parcelamento_pagamento IS NOT NULL "
 
         elif "not-paid" in filters.expense_types:
-            expenses_query += "AND p.id_despesa_pagamento IS NULL"
-            installment_query += "AND pag.id_parcelamento_pagamento IS NULL"
+            expenses_query += "AND p.id_despesa_pagamento IS NULL "
+            installment_query += "AND pag.id_parcelamento_pagamento IS NULL "
 
     if len(filters.expense_categories) > 1:
-        expenses_query += "AND c.nome_categoria IN ?"
-        installment_query += "AND c.nome_categoria IN ?"
-        args_list.append(tuple(filters.expense_categories))
+        placeholders = ", ".join(["?"] * len(filters.expense_categories))
+        expenses_query += f"AND c.nome_categoria IN ({placeholders}) "
+        installment_query += f"AND c.nome_categoria IN ({placeholders}) "
+        args_list.extend(filters.expense_categories)
 
     elif len(filters.expense_categories) == 1:
-        expenses_query += "AND c.nome_categoria = ?"
-        installment_query += "AND c.nome_categoria = ?"
+        expenses_query += "AND c.nome_categoria = ? "
+        installment_query += "AND c.nome_categoria = ? "
         args_list.append(filters.expense_categories[0])
+
+    if filters.expense_date["init"] and filters.expense_date["end"]:
+        expenses_query += "AND d.data_despesa BETWEEN ? AND ? "
+        installment_query += "AND p.data_inicio_parcelamento BETWEEN ? AND ? "
+
+        args_list.append(filters.expense_date["init"])
+        args_list.append(filters.expense_date["end"])
+
+    elif filters.expense_date["init"] or filters.expense_date["end"]:
+        expenses_query += "AND d.data_despesa = ? "
+        installment_query += "AND p.data_inicio_parcelamento = ? "
+
+        args_list.append(filters.expense_date["init"] if filters.expense_date["init"] else filters.expense_date["end"])
+
+    if filters.expense_values["init"] and filters.expense_values["end"]:
+        expenses_query += "AND d.valor_despesa BETWEEN ? AND ? "
+        installment_query += "AND p.valor_parcelas BETWEEN ? AND ? "
+
+        args_list.append(filters.expense_values["init"])
+        args_list.append(filters.expense_values["end"])
+
+    elif filters.expense_values["init"] or filters.expense_values["end"]:
+        expenses_query += "AND d.valor_despesa = ?"
+        installment_query += "AND p.valor_parcelas = ?"
+
+        args_list.append(filters.expense_values["init"] if filters.expense_values["init"] else filters.expense_values["end"])
 
 
     with sqlite3.connect(utils.DB_ROUTE) as connection:
@@ -152,12 +181,49 @@ def get_expenses(user_id, filters:schemas.Filters):
 
         cursor = connection.cursor()
 
-        cursor.execute(expenses_query, args_list)
+        cursor.execute(expenses_query + " ORDER BY c.nome_categoria;", args_list)
 
         results["expenses"] = cursor.fetchall()
 
-        cursor.execute(installment_query, args_list)
+        cursor.execute(installment_query + " ORDER BY c.nome_categoria;", args_list)
 
         results["installments"] = cursor.fetchall()
-        
+
         return results
+
+def delete_expense(expense:schemas.DeleteSpent):
+    """
+    Exclui uma despesa determinada pelo usuário
+    Args: 
+        expense_id: id da despesa
+    """
+
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
+        cursor = connection.cursor()
+
+        if expense.type == "Expense":
+            cursor.execute("DELETE FROM despesa WHERE id_despesa = ?", (expense.id,))
+        else:
+            cursor.execute("DELETE FROM parcelamento WHERE id_parcelamento = ?", (expense.id,))
+
+
+def edit_expenses(expense:schemas.ExpenseEdit):
+    """
+    Edita uma despesa determinada pelo usuário
+    Args: 
+        expense: id da despesa
+    """
+
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
+        cursor = connection.cursor()
+        cursor.execute(
+            """UPDATE despesa
+                  SET id_categoria_despesa = c.id_categoria,
+                      data_despesa         = ?,
+                      valor_despesa        = ?,
+                      obs_despesa          = ?
+                 FROM categoria c
+                WHERE id_despesa = ?
+                  AND c.nome_categoria = ?""",
+                    (expense.date, expense.value, expense.description, expense.id, expense.category)
+                    )

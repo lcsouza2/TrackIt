@@ -1,6 +1,12 @@
 /*Fonte do TrackIt*/
 @import url('https://fonts.googleapis.com/css2?family=Lalezar&display=swap');
 
+@keyframes popin {
+    to {
+        transform: scale(1);
+    }
+}
+
 form {
     position: absolute;
     width: 20%;
@@ -11,6 +17,8 @@ form {
     transition: all 1s ease;
     overflow: hidden;
     white-space: normal;
+    z-index: 1000;
+
 }
 
 body {
@@ -100,7 +108,6 @@ details div input {
 
 table {
     margin-top: 50px;
-    transition: all 1s ease;
 
     width: 80%;
 
@@ -117,7 +124,6 @@ table {
     border-width: 2px;
     border-radius: 20px;
     overflow: hidden;
-
 }
 
 th,
@@ -137,4 +143,88 @@ td {
 
 tr {
     text-align: center;
+}
+
+.del-button {
+    color: #FFFFFF;
+    background-color: #D63737;
+    font-family: "Lalezar";
+    border-radius: 3px;
+    border-style: none;
+}
+
+.alt-button {
+    color: #FFFFFF;
+    background-color: #4050FC;
+    font-family: "Lalezar";
+    border-radius: 3px;
+    border-style: none;
+}
+
+.popup {
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.close {
+    font-family: "Lalezar";
+    cursor: pointer;
+    font-size: 16px;
+    right: 10px;
+    width: min-content;
+    height: min-content;
+}
+
+#edit-expense {
+    background-color: #FFFFFF;
+
+    transform: scale(0);
+    animation: popin 0.3s forwards;
+    transition: all 0.1s ease;
+
+    border: 5px solid #4050FC;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 10px;
+
+    width: 300px;
+    height: 260px;
+}
+
+#edit-expense input,
+#edit-expense select {
+    height: 25px;
+    color: #9676F1;
+    border: 3px #4050FC solid;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    font-family: "Lalezar";
+    font-size: 16px;
+}
+
+#edit-expense button {
+    height: 30px;
+    width: 150px;
+    align-self: center;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    border: 3px #4050FC solid;
+    font-family: "Lalezar";
+    color: #9676F1;
+    font-size: 16px
+}
+
+#edit-expense input::placeholder {
+    color: #9676F1;
 }

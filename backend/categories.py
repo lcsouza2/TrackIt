@@ -41,12 +41,11 @@ def get_categories_info(user_id):
             """
             SELECT c.nome_categoria,
                 c.cor_categoria,
-                SUM(valor_despesa)
-            FROM despesa d,
-                categoria c
-            WHERE id_user_despesa = c.id_user_categoria
-            AND c.id_user_categoria = ?
-            AND d.id_categoria_despesa = c.id_categoria
+                SUM(d.valor_despesa)
+            FROM categoria c
+            LEFT JOIN despesa d ON c.id_user_categoria = d.id_user_despesa
+                AND d.id_categoria_despesa = c.id_categoria
+            WHERE c.id_user_categoria = ?
             GROUP BY c.nome_categoria;
             """,
             (user_id,)

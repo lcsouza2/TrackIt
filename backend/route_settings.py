@@ -127,7 +127,7 @@ def create_category(category:schemas.Category, response:Response, request:Reques
 @main_app.delete("/manager/expenses/delete_expense")
 async def delete_expense(expense:schemas.DeleteSpent, request:Request, response:Response):
     """Remove um gasto do banco de dados"""
-    utils.autenticate(request, response)    
+    utils.autenticate(request, response)
     expense_installment.delete_expense(expense)
 
 @main_app.put("/manager/expenses/edit_expense")

@@ -44,7 +44,7 @@ expenseType.addEventListener("change", function() {
                 <input type="date" id="add-expense-date" required>
                 
                 <label for="category">Selecione a categoria da despesa</label>
-                <select name="category" id="add-expense-category">
+                <select name="category" id="add-category">
                     <option value="new-category" style="color: #6a4c93;">Nova categoria</option>
                 </select>
                 <button type="submit">Feito!</button>
@@ -53,7 +53,7 @@ expenseType.addEventListener("change", function() {
             fetch("/manager/user_categories")
                 .then(response => response.json())
                 .then(data => {
-                    const categorySelect = document.getElementById('add-expense-category');
+                    const categorySelect = document.getElementById('add-category');
 
                     data.forEach(item => {
                         const option = document.createElement('option');
@@ -84,7 +84,7 @@ expenseType.addEventListener("change", function() {
                 <input type="date" id="add-start-date" required>
 
                 <label for="category">Selecione a categoria do parcelamento</label>
-                <select name="category" id="add-installment-category">
+                <select name="category" id="add-category">
                     <option value="new-category" style="color: #6a4c93;">Nova categoria</option>
                 </select>
                 <button type="submit">Feito!</button>
@@ -93,7 +93,7 @@ expenseType.addEventListener("change", function() {
             fetch("/manager/user_categories")
                 .then(response => response.json())
                 .then(data => {
-                    const categorySelect = document.getElementById('add-installment-category');
+                    const categorySelect = document.getElementById('add-category');
 
                     data.forEach(item => {
                         const option = document.createElement('option');
@@ -103,7 +103,6 @@ expenseType.addEventListener("change", function() {
                         categorySelect.appendChild(option);
                     });
                 })
-                .catch(error => console.error('Erro:', error));
         }, 200);
     }
 });
@@ -169,7 +168,7 @@ buttonMenu.addEventListener("click", function(){
 fetch("/manager/user_categories")
     .then(response => response.json())
     .then(data => {
-        const categorySelect = document.getElementById('add-expense-category');
+        const categorySelect = document.getElementById('add-category');
 
         data.forEach(item => {
             const option = document.createElement('option');

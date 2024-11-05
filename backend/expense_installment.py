@@ -51,7 +51,7 @@ def create_expense(user_id:int, expense:schemas.Expense):
                 raise HTTPException(409, "Expense already exists") from exc
 
 def get_expenses(user_id, filters:schemas.Filters):
-
+    """Retorna todas as despesas de um usuário"""
     expenses_query = """
                     SELECT 
                         d.id_despesa,
@@ -73,7 +73,7 @@ def get_expenses(user_id, filters:schemas.Filters):
                             p.obs_parcelamento,
                             p.valor_parcelas,
                             p.qtd_parcelas,
-                            p.id_categoria_parcelamento,
+                            c.nome_categoria,
                             p.porcent_juros,
                             p.data_inicio_parcelamento
                         
@@ -189,31 +189,44 @@ def edit_expenses(expense:schemas.ExpenseEdit):
                     )
 
 def register_installment(installment:schemas.Installment, user_id):
-    
+    """Cria um parcelamento no banco de dados"""
     with sqlite3.connect(utils.DB_ROUTE) as connection:
         cursor = connection.cursor()
-        
+
         cursor.execute("""
                        SELECT id_categoria 
                        FROM categoria 
                        WHERE id_user_categoria = ?
                        AND nome_categoria      = ?""",
                        (user_id, installment.category))
-        
+
         installment_category = cursor.fetchone()[0]
-        
-        cursor.execute(
-            """
-                INSERT INTO parcelamento VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (
-                installment_category,
-                user_id,
-                installment.description,
-                installment.quantity,
-                installment.installment_value,
-                installment.interests,
-                installment.quantity * installment.installment_value,
-                installment.init_date
-                )
-        )
+        try:
+            cursor.execute(
+                """
+                    INSERT INTO parcelamento(
+                        id_categoria_parcelamento,
+                        id_user_parcelamento,
+                        obs_parcelamento,
+                        qtd_parcelas,
+                        valor_parcelas,
+                        porcent_juros,
+                        valor_total_parcelamento,
+                        data_inicio_parcelamento
+                    ) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    installment_category,
+                    user_id,
+                    installment.description,
+                    installment.quantity,
+                    installment.installment_value,
+                    installment.interests,
+                    installment.quantity * installment.installment_value,
+                    installment.init_date
+                    )
+            )
+        except sqlite3.IntegrityError as exc:
+            if "UNIQUE" in str(exc):
+                raise HTTPException(409, "Installmente already exists") from exc

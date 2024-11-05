@@ -50,46 +50,6 @@ def create_expense(user_id:int, expense:schemas.Expense):
             if "UNIQUE" in str(exc):
                 raise HTTPException(409, "Expense already exists") from exc
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def get_expenses(user_id, filters:schemas.Filters):
 
     expenses_query = """
@@ -227,3 +187,33 @@ def edit_expenses(expense:schemas.ExpenseEdit):
                   AND c.nome_categoria = ?""",
                     (expense.date, expense.value, expense.description, expense.id, expense.category)
                     )
+
+def register_installment(installment:schemas.Installment, user_id):
+    
+    with sqlite3.connect(utils.DB_ROUTE) as connection:
+        cursor = connection.cursor()
+        
+        cursor.execute("""
+                       SELECT id_categoria 
+                       FROM categoria 
+                       WHERE id_user_categoria = ?
+                       AND nome_categoria      = ?""",
+                       (user_id, installment.category))
+        
+        installment_category = cursor.fetchone()[0]
+        
+        cursor.execute(
+            """
+                INSERT INTO parcelamento VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                installment_category,
+                user_id,
+                installment.description,
+                installment.quantity,
+                installment.installment_value,
+                installment.interests,
+                installment.quantity * installment.installment_value,
+                installment.init_date
+                )
+        )

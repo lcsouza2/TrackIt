@@ -127,10 +127,17 @@ def create_category(category:schemas.Category, response:Response, request:Reques
 @main_app.delete("/manager/expenses/delete_expense")
 async def delete_expense(expense:schemas.DeleteSpent, request:Request, response:Response):
     """Remove um gasto do banco de dados"""
-    utils.autenticate(request, response)
+    utils.autenticate(request, response)    
     expense_installment.delete_expense(expense)
 
 @main_app.put("/manager/expenses/edit_expense")
 async def edit_expense(expense:schemas.ExpenseEdit, request:Request, response:Response):
     """Edita uma despesa"""
+    utils.autenticate(request, response)
     expense_installment.edit_expenses(expense)
+    
+@main_app.post("/manager/register_installment", status_code=HTTPStatus.CREATED)
+async def register_installment(installment:schemas.Installment, response:Response, request:Request):
+    """Cria um parcelamento no banco"""
+    user_id = utils.autenticate(request, response)
+    expense_installment.register_installment(installment, user_id)

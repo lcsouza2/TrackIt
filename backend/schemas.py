@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 from pydantic import BaseModel
 from pydantic import EmailStr
 
@@ -26,15 +26,16 @@ class ExpenseEdit(Expense):
     id                  : int
     
 class DeleteSpent(BaseModel):
-    type                : Literal["Expense", "Installment"]
+    type                : Literal["Expense",  "Installment"]
     id                  : int
 
 class Installment(BaseModel):
     description         : str
     category            : str
     quantity            : int
-    inst_value          : float
+    installment_value   : float
     init_date           : str
+    interests           : Optional[float | int]
 
 class Category(BaseModel):
     name                : str

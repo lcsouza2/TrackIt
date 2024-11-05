@@ -36,7 +36,6 @@ header {
     color: #4050FC;
     font-weight: normal;
     font-size: 40px;
-
 }
 
 /*Hiperlinks no cabeçalho (Sobre o TrackIt e Sobre Nós) */
@@ -248,10 +247,20 @@ body h1 {
     text-align: center;
 }
 
-#manter_login{
-    display: inline;
-    align-items: center;
-    
+#manter_login {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    flex-direction: row;
+    max-width: 20px;
+    max-height: 20px;
+    text-wrap: nowrap;
+}
+
+#stay_logged {    
+
+    max-width: 15px;
+    max-height: 15px;
 }
 
 #popup_register .popup-content, form {

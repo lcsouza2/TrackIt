@@ -21,33 +21,24 @@ let colorNewCategory = document.getElementById("new-category-color")
 
 
 let formCreateExpense = document.getElementById("form-create-expense")
+
 let expenseDescription = document.getElementById("add-expense-description")
+
 let expenseValue = document.getElementById("add-expense-value")
 let expenseDate = document.getElementById("add-expense-date")
 let expenseCategory = document.getElementById("add-expense-category")
 
-{/* <input type="text" id="add-expense-description" placeholder="Dê uma breve descrição sobre a despesa" required>        
-<input type="number" id="add-installment-value" placeholder="Digite o valor de cada parcela" required>
-<input type="number" id="add-installments" placeholder="Digite a quantidade de parcelas" required>
-<input type="number" id="add-interests" placeholder="Digite a porcentagem de juros" required>
 
-<label for="add-start-date">Informe a data de início</label>
-<input type="date" id="add-start-date" required>
-
-<label for="category">Selecione a categoria do parcelamento</label>
-<select name="category" id="add-installment-category">
-    <option value="new-category" style="color: #6a4c93;">Nova categoria</option>
-</select>
-<button type="submit">Feito!</button> */}
-
-
+let installmentInterests = document.getElementById("add-interests")
+let installmentInitDate = document.getElementById("add-start-date")
+let installmentCategory = document.getElementById("add-installment-category")
 let installmentValue = document.getElementById("add-installment-value")
 let installmentsQuantity = document.getElementById("add-installments")
 
 formCreateExpense.addEventListener("submit", function(event){
     event.preventDefault();
 
-    if (expenseCategory.value === "new-category") {
+    if (expenseCategory.value === "new-category" || installmentCategory.value === "new-category") {
         openPopup("popup-add-category");
         formCreateCategory.addEventListener("submit", function(event) {
             event.preventDefault();
@@ -63,58 +54,99 @@ formCreateExpense.addEventListener("submit", function(event){
             })
             .then(response => {
                 if (response.ok) {
-                    fetch("/manager/register_expense", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            "description": expenseDescription.value,
-                            "value": expenseValue.value,
-                            "date": expenseDate.value,
-                            "category" : nameNewCategory.value
+                    if (document.getElementById("add-expense-type").value === "Comum") {
+
+                        fetch("/manager/register_expense", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                "description": expenseDescription.value,
+                                "value": expenseValue.value,
+                                "date": expenseDate.value,
+                                "category" : nameNewCategory.value
+                            })
                         })
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            alert("Nova categoria e despesa criadas!")
-                            location.reload()
-                        }  
-                    })
-                    .catch(error => {
-                        if (error.status === 401) {
-                            alert("A categoria já existe")
-                            return
-                        }
-                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Nova categoria e despesa criadas!")
+                                location.reload()
+                            }  
+                        })
+                        .catch(error => {
+                            if (error.status === 401) {
+                                alert("A categoria já existe")
+                                return
+                            }
+                        })
+                    } else {
+                        fetch("/manager/register_installment", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type" : "application/json"
+                            },
+                            body: JSON.stringify({
+                                "description"       : expenseDescription.value,
+                                "category"          : installmentCategory.value,
+                                "quantity"          : installmentsQuantity.value,
+                                "installment_value" : installmentValue.value,
+                                "init_date"         : installmentInitDate.value,
+                                "interests"         : installmentInterests.value
+                            })
+                        })
+                    }
                 }
             })
         })
 
     } else {
-        fetch("/manager/register_expense", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "description": expenseDescription.value,
-                "value": expenseValue.value,
-                "date": expenseDate.value,
-                "category" : expenseCategory.value
+        if (document.getElementById("add-expense-type").value === "Comum") {
+
+            fetch("/manager/register_expense", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "description": expenseDescription.value,
+                    "value": expenseValue.value,
+                    "date": expenseDate.value,
+                    "category" : nameNewCategory.value
+                })
             })
-        })
-        .then(response => {
-            if (response.ok) {
-                alert("Nova despesa criada!")
-                location.reload()
-            }  else if (response.status === 409) {
-                alert("A despesa já existe!")
-                return
-            }
-        })
-        .catch(error => {
-            console.error(error);
-        })
+            .then(response => {
+                if (response.ok) {
+                    alert("Nova categoria e despesa criadas!")
+                    location.reload()
+                }  
+            })
+            .catch(error => {
+                if (error.status === 401) {
+                    alert("A categoria já existe")
+                    return
+                }
+            })
+        } else {
+            fetch("/manager/register_installment", {
+                method: "POST",
+                headers: {
+                    "Content-Type" : "application/json"
+                },
+                body: JSON.stringify({
+                    "description"       : expenseDescription.value,
+                    "category"          : installmentCategory.value,
+                    "quantity"          : installmentsQuantity.value,
+                    "installment_value" : installmentValue.value,
+                    "init_date"         : installmentInitDate.value,
+                    "interests"         : installmentInterests.value
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Novo parcelamento criado ")
+                }
+            })
+        }
     }
 })

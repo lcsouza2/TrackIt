@@ -73,12 +73,6 @@ registerForm.addEventListener("submit", function(event) {
         } else {
             alert("Registrado com sucesso, vamos te redirecionar");
             window.location.href = "/manager";
-            sessionStorage.setItem("sessionToken", data.Session_JWT);
         }
-    })
-        
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-
+    })      
+})

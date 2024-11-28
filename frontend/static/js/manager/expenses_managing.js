@@ -1,13 +1,4 @@
-function openPopup(id) {
-    document.querySelector(".popup").classList.add('blur');
-    document.getElementById(id).style.display = "flex";
-}
-
-function closePopup(id) {
-    document.querySelector(".popup").classList.remove("blur");
-    document.getElementById(id).style.display = 'none';
-    document.getElementById(id).style.animation = '';
-}
+import { openPopup, closePopup } from "../utils.js";
 
 document.querySelectorAll('.close').forEach(function(closeButton) {
     closeButton.addEventListener('click', function() {

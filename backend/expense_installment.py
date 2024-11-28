@@ -1,4 +1,5 @@
 """Módulo para gerenciar as despesas e parcelamentos"""
+
 import datetime
 import sqlite3
 
@@ -7,7 +8,7 @@ import utils
 from fastapi.exceptions import HTTPException
 
 
-def create_expense(user_id:int, expense:schemas.Expense):
+def create_expense(user_id: int, expense: schemas.Expense):
     """Cria uma despesa no banco de dados"""
 
     with sqlite3.connect(utils.DB_ROUTE) as connection:
@@ -19,7 +20,8 @@ def create_expense(user_id:int, expense:schemas.Expense):
                 WHERE nome_categoria  = ?
                 AND id_user_categoria = ?
             """,
-            (expense.category, user_id))
+            (expense.category, user_id),
+        )
 
         result = cursor.fetchone()
 
@@ -42,15 +44,22 @@ def create_expense(user_id:int, expense:schemas.Expense):
                     )
                 VALUES (?, ?, ?, ?, ?)
                 """,
-                (id_categoria, user_id, date, expense.value, expense.description) #type: ignore
-                )
+                (
+                    id_categoria,
+                    user_id,
+                    date,
+                    expense.value,
+                    expense.description,
+                ),  # type: ignore
+            )
             connection.commit()
 
         except sqlite3.IntegrityError as exc:
             if "UNIQUE" in str(exc):
                 raise HTTPException(409, "Expense already exists") from exc
 
-def get_expenses(user_id, filters:schemas.Filters):
+
+def get_expenses(user_id, filters: schemas.Filters):
     """Retorna todas as despesas de um usuário"""
     expenses_query = """
                     SELECT 
@@ -66,8 +75,7 @@ def get_expenses(user_id, filters:schemas.Filters):
                         WHERE id_user_despesa = ? 
                     """
 
-
-    installment_query =  """
+    installment_query = """
                         SELECT
                             p.id_parcelamento,
                             p.obs_parcelamento,
@@ -88,7 +96,9 @@ def get_expenses(user_id, filters:schemas.Filters):
     if filters.expense_types:
         if "paid" in filters.expense_types:
             expenses_query += "AND p.id_despesa_pagamento IS NOT NULL "
-            installment_query += "AND pag.id_parcelamento_pagamento IS NOT NULL "
+            installment_query += (
+                "AND pag.id_parcelamento_pagamento IS NOT NULL "
+            )
 
         elif "not-paid" in filters.expense_types:
             expenses_query += "AND p.id_despesa_pagamento IS NULL "
@@ -116,7 +126,11 @@ def get_expenses(user_id, filters:schemas.Filters):
         expenses_query += "AND d.data_despesa = ? "
         installment_query += "AND p.data_inicio_parcelamento = ? "
 
-        args_list.append(filters.expense_date["init"] if filters.expense_date["init"] else filters.expense_date["end"])
+        args_list.append(
+            filters.expense_date["init"]
+            if filters.expense_date["init"]
+            else filters.expense_date["end"]
+        )
 
     if filters.expense_values["init"] and filters.expense_values["end"]:
         expenses_query += "AND d.valor_despesa BETWEEN ? AND ? "
@@ -129,32 +143,36 @@ def get_expenses(user_id, filters:schemas.Filters):
         expenses_query += "AND d.valor_despesa = ?"
         installment_query += "AND p.valor_parcelas = ?"
 
-        args_list.append(filters.expense_values["init"] if filters.expense_values["init"] else filters.expense_values["end"])
-
+        args_list.append(
+            filters.expense_values["init"]
+            if filters.expense_values["init"]
+            else filters.expense_values["end"]
+        )
 
     with sqlite3.connect(utils.DB_ROUTE) as connection:
-
-        results = {
-            "expenses" : [],
-            "installments" : []
-        }
+        results = {"expenses": [], "installments": []}
 
         cursor = connection.cursor()
 
-        cursor.execute(expenses_query + " ORDER BY c.nome_categoria;", args_list)
+        cursor.execute(
+            expenses_query + " ORDER BY c.nome_categoria;", args_list
+        )
 
         results["expenses"] = cursor.fetchall()
 
-        cursor.execute(installment_query + " ORDER BY c.nome_categoria;", args_list)
+        cursor.execute(
+            installment_query + " ORDER BY c.nome_categoria;", args_list
+        )
 
         results["installments"] = cursor.fetchall()
 
         return results
 
-def delete_expense(expense:schemas.DeleteSpent):
+
+def delete_expense(expense: schemas.DeleteSpent):
     """
     Exclui uma despesa determinada pelo usuário
-    Args: 
+    Args:
         expense_id: id da despesa
     """
 
@@ -162,15 +180,20 @@ def delete_expense(expense:schemas.DeleteSpent):
         cursor = connection.cursor()
 
         if expense.type == "Expense":
-            cursor.execute("DELETE FROM despesa WHERE id_despesa = ?", (expense.id,))
+            cursor.execute(
+                "DELETE FROM despesa WHERE id_despesa = ?", (expense.id,)
+            )
         else:
-            cursor.execute("DELETE FROM parcelamento WHERE id_parcelamento = ?", (expense.id,))
+            cursor.execute(
+                "DELETE FROM parcelamento WHERE id_parcelamento = ?",
+                (expense.id,),
+            )
 
 
-def edit_expenses(expense:schemas.ExpenseEdit):
+def edit_expenses(expense: schemas.ExpenseEdit):
     """
     Edita uma despesa determinada pelo usuário
-    Args: 
+    Args:
         expense: id da despesa
     """
 
@@ -185,20 +208,29 @@ def edit_expenses(expense:schemas.ExpenseEdit):
                  FROM categoria c
                 WHERE id_despesa = ?
                   AND c.nome_categoria = ?""",
-                    (expense.date, expense.value, expense.description, expense.id, expense.category)
-                    )
+            (
+                expense.date,
+                expense.value,
+                expense.description,
+                expense.id,
+                expense.category,
+            ),
+        )
 
-def register_installment(installment:schemas.Installment, user_id):
+
+def register_installment(installment: schemas.Installment, user_id):
     """Cria um parcelamento no banco de dados"""
     with sqlite3.connect(utils.DB_ROUTE) as connection:
         cursor = connection.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
                        SELECT id_categoria 
                        FROM categoria 
                        WHERE id_user_categoria = ?
                        AND nome_categoria      = ?""",
-                       (user_id, installment.category))
+            (user_id, installment.category),
+        )
 
         installment_category = cursor.fetchone()[0]
         try:
@@ -224,9 +256,11 @@ def register_installment(installment:schemas.Installment, user_id):
                     installment.installment_value,
                     installment.interests,
                     installment.quantity * installment.installment_value,
-                    installment.init_date
-                    )
+                    installment.init_date,
+                ),
             )
         except sqlite3.IntegrityError as exc:
             if "UNIQUE" in str(exc):
-                raise HTTPException(409, "Installmente already exists") from exc
+                raise HTTPException(
+                    409, "Installmente already exists"
+                ) from exc

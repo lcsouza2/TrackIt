@@ -4,13 +4,34 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
 fastapi = {extras = ["standard"], version = "^0.115.2"}
 bcrypt = "^4.2.0"
 pyjwt = "^2.9.0"
+sqlalchemy = "^2.0.36"
 
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.7.3"
+taskipy = "^1.14.0"
+
+[tool.taskipy.tasks]
+run-dev = "fastapi dev backend/route_settings.py"
+run = "fastapi run backend/route_settings.py"
+
+lint = "ruff check"
+format = "ruff format"
+
+[tool.ruff]
+indent-width = 4
+line-length = 79
+
+[tool.ruff.format]
+docstring-code-format = true
+indent-style = "space"
 
 [build-system]
 requires = ["poetry-core"]
